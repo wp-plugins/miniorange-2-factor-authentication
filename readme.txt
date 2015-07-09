@@ -1,6 +1,6 @@
 === miniOrange 2 Factor Authentication ===
 Contributors: miniOrange
-Tags: 2 factor authentication, 2 step verification, 2 step authentication, Multifactor authentication, single sign on, 2 Factor, Two Factor, Authentication, Mobile Authentication, 2FA, tfa, strong authentication, mobile, smartphone authentication, no password, login, passwordless login, Google authenticator, website security, android, iphone, otp, one time passcode, soft token, miniorange
+Tags: 2 factor authentication, 2 step verification, 2 step authentication, Multifactor authentication, single sign on, authy, Clef, 2 Factor, Two Factor, Authentication, Mobile Authentication, 2FA, tfa, strong authentication, mobile, smartphone authentication, no password, login, passwordless login, Google authenticator, website security, android, iphone, otp, one time passcode, soft token, miniorange
 Requires at least: 3.0.1
 Tested up to: 4.2.2
 Stable tag: 1.0.0
@@ -80,7 +80,7 @@ You should go and reconfigure with your new phone after logging in.
 3. Configure your mobile
 4. Username Login Screen (Enter username)
 5. Mobile AUthentication Login Screen ( Authenticate your mobile )
-6. OTP Login Screen (If your phone is offline the enter OTP from miniOrange app.)
+6. OTP Login Screen (If your phone is offline then enter OTP from miniOrange app.)
 
 == Changelog ==
 
