@@ -1,6 +1,6 @@
 === miniOrange 2 Factor Authentication ===
 Contributors: miniOrange
-Tags: 2 step verification, 2 step authentication, Multifactor authentication, single sign on, 2 Factor, Two Factor, Authentication, Mobile Authentication, 2FA, tfa, strong authentication, mobile, smartphone authentication, no password, login, passwordless login, Google authenticator, website security, android, iphone, otp, one time passcode, soft token, miniorange
+Tags: 2 factor authentication, 2 step verification, 2 step authentication, Multifactor authentication, single sign on, 2 Factor, Two Factor, Authentication, Mobile Authentication, 2FA, tfa, strong authentication, mobile, smartphone authentication, no password, login, passwordless login, Google authenticator, website security, android, iphone, otp, one time passcode, soft token, miniorange
 Requires at least: 3.0.1
 Tested up to: 4.2.2
 Stable tag: 1.0.0
@@ -57,7 +57,7 @@ Remove the plugin from the plugins directory. Copy it out and you should be all 
 = I can login to wordpress but i want to go back to normal login. =
 Deactivate the plugin
 
-= I want 2 factor auth for all my users not just me .=
+= I want 2 factor auth for all my users not just me. =
 Contact info@miniorange.com
 
 = My phone is offline, how do I login? =
