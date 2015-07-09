@@ -94,9 +94,11 @@ If you are logged out then remove the plugin from plugins directory. Copy it out
 You should go and reconfigure with your new phone after logging in. 
 
 = What other authentication methods do you suppport? =
-miniOrange authentication service has 15+ authentication methods. <br />
+miniOrange authentication service has 15+ authentication methods.
+
 One time passcodes (OTP) over SMS, OTP over Email, OTP over SMS and Email, Out of Band SMS, Out of Band Email, Soft Token, Push Notification, USB based Hardware token, Security Questions, Mobile Authentication, Voice Authentication (Biometrics), Phone Verification, Device Identification, Location, Time of Access
-User Behavior. <br />
+User Behavior.
+
 To know more about authentication methods, you can visit <a href="http://miniorange.com/strong_auth" target="_blank">miniOrange 2 Factor Authentication Methods</a>. If you want to have any other 2-factor for your WordPress site, <a href="http://miniorange.com/contact" target="_blank">Contact us</a>.
 
 = For any other query/problem/request =
