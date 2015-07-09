@@ -1,6 +1,6 @@
 === miniOrange 2 Factor Authentication ===
 Contributors: miniOrange
-Tags: 2 factor authentication, 2 step verification, 2 step authentication, Multifactor authentication, single sign on, authy, Clef, 2 Factor, Two Factor, Authentication, Mobile Authentication, 2FA, tfa, strong authentication, mobile, smartphone authentication, no password, login, passwordless login, Google authenticator, website security, android, iphone, otp, one time passcode, soft token, miniorange
+Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, login, authy, Clef, 2 Factor, Google authenticator, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange
 Requires at least: 3.0.1
 Tested up to: 4.2.2
 Stable tag: 1.0.0
