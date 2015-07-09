@@ -1,0 +1,23 @@
+body.login div#login form#loginform input#user_login {
+	display:none;
+}
+
+body.login div#login form#loginform p.forgetmenot {
+	display: none;
+}
+
+body.login div#login form#loginform p.submit input#wp-submit {
+	display: none;
+}
+
+body.login div#login form#loginform p label {
+	display: none;
+}
+
+body.login div#login p#nav {
+	display: none;
+}
+
+body.login div#login form#loginform input#user_pass {
+	display: none;
+}
