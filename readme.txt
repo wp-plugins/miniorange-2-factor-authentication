@@ -26,6 +26,28 @@ miniOrange is easy to setup and use. Just install miniOrange app and configure a
 * Displays graphical QR codes for easy scanning into apps on your phone/tablet.
 * Suppports Soft Token(OTP) in case phone is offline.
 
+= Your choice of second factor =
+miniOrange 2 factor authentication plugin is extendable to use any of the following auth methods. To know more about authentication methods, you can visit <a href="http://miniorange.com/strong_auth" target="_blank">miniOrange 2 Factor Authentication Methods</a>. If you want to have any other 2-factor for your WordPress site, <a href="http://miniorange.com/contact" target="_blank">Contact us</a>.
+* One time passcodes (OTP) over SMS
+* OTP over Email
+* OTP over SMS and Email
+* Out of Band SMS
+* Out of Band Email
+* Soft Token
+* Push Notification
+* USB based Hardware token
+* Security Questions
+* Mobile Authentication
+* Voice Authentication (Biometrics)
+* Phone Verification
+* Device Identification
+* Location
+* Time of Access
+* User Behavior
+
+You can choose from any of the above authentication methods to augment your password based authentication. miniOrange authentication service works with all phone types, from landlines to smart-phone platforms. In the simplest case, users just answer a phone call and press a button to authenticate. miniOrange authentication service works internationally, and has customers authenticating from many countries around the world.
+
+
 == Installation ==
 
 = From your WordPress dashboard =
@@ -63,15 +85,23 @@ Contact info@miniorange.com
 = My phone is offline, how do I login? =
 Use one time passcode login by clicking on 'click here if your phone is offline'
 
-= For any other query/problem/request =
-Please email us at info@miniorange.com or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>
-
 = My phone is lost, stolen or discharged. =
 Deactivate the plugin if you are logged in and after logging in activate and configure your new phone.
 If you are logged out then remove the plugin from plugins directory. Copy it out and you should be able to log back in using wordpress userid password.
 
 = I am upgrading my phone. =
 You should go and reconfigure with your new phone after logging in. 
+
+= What other authentication methods do you suppport? =
+miniOrange authentication service has 15+ authentication methods.
+One time passcodes (OTP) over SMS, OTP over Email, OTP over SMS and Email, Out of Band SMS, Out of Band Email, Soft Token, Push Notification, USB based Hardware token, Security Questions, Mobile Authentication, Voice Authentication (Biometrics), Phone Verification, Device Identification, Location, Time of Access
+User Behavior.
+
+To know more about authentication methods, you can visit <a href="http://miniorange.com/strong_auth" target="_blank">miniOrange 2 Factor Authentication Methods</a>. If you want to have any other 2-factor for your WordPress site, <a href="http://miniorange.com/contact" target="_blank">Contact us</a>.
+
+= For any other query/problem/request =
+Please email us at info@miniorange.com or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>
+
 
 == Screenshots ==
 
