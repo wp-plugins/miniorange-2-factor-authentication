@@ -40,7 +40,7 @@ class Customer_Setup{
 		
 		$fields = array(
 			'companyName' => $_SERVER['SERVER_NAME'],
-			'areaOfInterest' => 'miniOrange 2 Factor Authentication',
+			'areaOfInterest' => 'miniOrange 2 Factor Authentication Plugin',
 			'firstname' => $current_user->user_firstname,
 			'lastname' => $current_user->user_lastname,
 			'email' => $this->email,
