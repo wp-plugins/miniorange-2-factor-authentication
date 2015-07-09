@@ -305,7 +305,7 @@ class Miniorange_Mobile_Login{
 			<div id="mo_2_factor_login_page">
 			
 			
-				<a href="http://miniorange.com/2-factor-authentication-for-wordpress" target="_blank"><img src="<?php echo plugins_url( 'includes/images/miniorange_logo.png' , __FILE__ );?>" style="width:100px;"/></a><br /><br />
+				<a href="http://miniorange.com/strong_auth" target="_blank"><img src="<?php echo plugins_url( 'includes/images/miniorange_logo.png' , __FILE__ );?>" style="width:100px;"/></a><br /><br />
 				<label style="color:#777;font-size:14px;">Username</label>
 				<input type="text" name="mo2fa_username" required="true" autofocus="true" />
 					
@@ -319,7 +319,7 @@ class Miniorange_Mobile_Login{
 	public function mo_2_factor_show_soft_token(){
 	?>
 		<div id="mo_2_factor_soft_token_page">
-			<a href="http://miniorange.com/2-factor-authentication-for-wordpress" target="_blank"><img src="<?php echo plugins_url( 'includes/images/miniorange_logo.png' , __FILE__ );?>" style="width:100px;"/></a><br />
+			<a href="http://miniorange.com/strong_auth" target="_blank"><img src="<?php echo plugins_url( 'includes/images/miniorange_logo.png' , __FILE__ );?>" style="width:100px;"/></a><br />
 				<br /><label style="color:#777;font-size:14px;">Validate OTP</label>
 				<div id="displaySoftToken"><center><input type="text" name="mo2fa_softtoken" required="true" autofocus="true" /></center></div>
 					
@@ -343,7 +343,7 @@ class Miniorange_Mobile_Login{
 		<div id="mo_2_factor_qr_code_page">
 			
 			
-				<a href="http://miniorange.com/2-factor-authentication-for-wordpress" target="_blank"><img src="<?php echo plugins_url( 'includes/images/miniorange_logo.png' , __FILE__ );?>" style="width:100px;"/></a><br />
+				<a href="http://miniorange.com/strong_auth" target="_blank"><img src="<?php echo plugins_url( 'includes/images/miniorange_logo.png' , __FILE__ );?>" style="width:100px;"/></a><br />
 				<h3><center>Mobile Authentication</center></h3><br />
 				<div id="showQrCode"><center> <?php echo '<img src="data:image/jpg;base64,' . get_option('mo2f-login-qrCode') . '" />'; ?></center></div>
 					
