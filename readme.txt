@@ -3,7 +3,7 @@ Contributors: miniOrange
 Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, login, authy, Clef, 2 Factor, Google authenticator, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange
 Requires at least: 3.0.1
 Tested up to: 4.2.2
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -93,6 +93,9 @@ If you are logged out then remove the plugin from plugins directory. Copy it out
 = I am upgrading my phone. =
 You should go and reconfigure with your new phone after logging in. 
 
+= I verified the OTP received over my email and entering the same password that I registered with, but I am still getting the error message - "Invalid password." =
+Please write to us at info@miniorange.com and we will get back to you very soon.
+
 = What other authentication methods do you suppport? =
 miniOrange authentication service has 15+ authentication methods.
 
@@ -116,10 +119,16 @@ Please email us at info@miniorange.com or <a href="http://miniorange.com/contact
 
 == Changelog ==
 
+= 1.1 =
+* Added email ID verification during registration.
+
 = 1.0.0 =
 * First version supported with mobile auhthentication for admin only.
 
 == Upgrade Notice ==
+
+= 1.1 = 
+* Added email ID verification during registration.
 
 = 1.0.0 =
 First version of plugin.

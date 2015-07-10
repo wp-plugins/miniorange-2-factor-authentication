@@ -34,7 +34,7 @@ class Two_Factor_Setup{
 		$customerKey = get_option('mo2f_customerKey');
 	
 		/* The customer API Key provided to you */
-		$apiKey = get_option('mo2f_customer_token');
+		$apiKey = get_option('mo2f_api_key');
 	
 		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
 		$currentTimeInMillis = round(microtime(true) * 1000);
@@ -87,7 +87,7 @@ class Two_Factor_Setup{
 		$customerKey = get_option('mo2f_customerKey');
 	
 		/* The customer API Key provided to you */
-		$apiKey = get_option('mo2f_customer_token');
+		$apiKey = get_option('mo2f_api_key');
 	
 		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
 		$currentTimeInMillis = round(microtime(true) * 1000);

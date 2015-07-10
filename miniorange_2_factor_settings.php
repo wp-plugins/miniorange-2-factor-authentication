@@ -3,7 +3,7 @@
 * Plugin Name: miniOrange 2 Factor Authentication
 * Plugin URI: http://miniorange.com
 * Description: This plugin enables login with mobile authentication as an additional layer of security.
-* Version: 1.0.0
+* Version: 1.1
 * Author: miniOrange
 * Author URI: http://miniorange.com
 * License: GPL2
@@ -19,6 +19,8 @@ define('MOAUTH_PATH', plugins_url(__FILE__));
 
 class Miniorange_Authentication {
 
+	private $defaultCustomerKey = "16555";
+	private $defaultApiKey = "fFd2XcvTGDemZvbw1bcUesNJWEqKbbUq";
 	function __construct() {
 		add_action( 'admin_menu', array( $this, 'miniorange_auth_menu' ) );
 		add_action( 'admin_init',  array( $this, 'miniorange_auth_save_settings' ) );
@@ -141,8 +143,8 @@ class Miniorange_Authentication {
 				update_option( 'mo2f_message', 'Please do not change the email.');
 				$this->mo_auth_show_error_message();
 				return;
-			}else if( strlen( $_POST['password'] ) < 8 || strlen( $_POST['confirmPassword'] ) < 8){
-				update_option( 'mo2f_message', 'Choose a password with minimum length 8.');
+			}else if( strlen( $_POST['password'] ) < 6 || strlen( $_POST['confirmPassword'] ) < 6){
+				update_option( 'mo2f_message', 'Choose a password with minimum length 6.');
 				$this->mo_auth_show_error_message();
 				return;
 			} else{
@@ -158,8 +160,22 @@ class Miniorange_Authentication {
 			if(strcmp($password, $confirmPassword) == 0) {
 				update_option( 'mo2f_password', $password );
 				$customer = new Customer_Setup();
-				$customerKey = json_decode($customer->create_customer(), true);
-				if(strcasecmp($customerKey['status'], 'CUSTOMER_USERNAME_ALREADY_EXISTS') == 0) {	//admin already exists in miniOrange
+				$customerKey = json_decode($customer->check_customer(), true);
+				if( strcasecmp( $customerKey['status'], 'CUSTOMER_NOT_FOUND') == 0 ){
+					$content = json_decode($customer->send_otp_token(get_option('mo2f_email'),'EMAIL',$this->defaultCustomerKey,$this->defaultApiKey), true);
+					if(strcasecmp($content['status'], 'SUCCESS') == 0) {
+						update_option( 'mo2f_message', 'An OTP has been sent to ' . ( get_option('mo2f_email') ) . '. Please enter the otp below to verify your email. ');
+						update_option('mo2f_transactionId',$content['txId']);
+						update_option('mo_2factor_temp_status',$content['phoneDelivery']['sendStatus']);
+						update_option('mo_2factor_registration_status','MO_2_FACTOR_OTP_DELIVERED_SUCCESS');
+						$this->mo_auth_show_success_message();
+					}else{
+						update_option('mo2f_message','There was an error in sending email. Please click on Resend OTP to try again.');
+						update_option('mo_2factor_temp_status',$content['phoneDelivery']['sendStatus']);
+						update_option('mo_2factor_registration_status','MO_2_FACTOR_OTP_DELIVERED_FAILURE');
+						$this->mo_auth_show_error_message();
+					}
+				}else{
 					$content = $customer->get_customer_key();
 					$customerKey = json_decode($content, true);
 					if(json_last_error() == JSON_ERROR_NONE) {
@@ -167,6 +183,7 @@ class Miniorange_Authentication {
 						update_option( 'mo2f_api_key', $customerKey['apiKey']);
 						update_option( 'mo2f_customer_token', $customerKey['token']);
 						update_option('mo2f_password', '');
+						update_option('mo_2factor_registration_status','MO_2_FACTOR_CUSTOMER_REGISTERED_SUCCESS');
 						$this->mo2f_get_qr_code_for_mobile(get_option('mo2f_email'));
 						update_option( 'mo2f_message', 'Your account has been retrieved successfully.');
 						$this->mo_auth_show_success_message();
@@ -175,32 +192,12 @@ class Miniorange_Authentication {
 						update_option('mo_2factor_registration_status','MO_2_FACTOR_VERIFY_CUSTOMER');
 						$this->mo_auth_show_error_message();
 					}
-				} else if(strcasecmp($customerKey['status'], 'SUCCESS') == 0) { // send otp after successful registration
-					update_option( 'mo2f_customerKey', $customerKey['id']);
-					update_option( 'mo2f_api_key', $customerKey['apiKey']);
-					update_option( 'mo2f_customer_token', $customerKey['token']);
-					update_option('mo2f_password', '');
-					update_option('mo_2factor_registration_status','MO_2_FACTOR_CUSTOMER_REGISTERED_SUCCESS');
-					$content = json_decode($customer->send_otp_token(get_option('mo2f_email'),'SMS'), true);
-					if(strcasecmp($content['status'], 'SUCCESS') == 0) {
-						update_option( 'mo2f_message', 'Your account has been created successfully. An SMS has been sent to ' . MO2f_Utility::get_hidden_phone( get_option('mo2f_phone') ) . ' with OTP.');
-						update_option('mo2f_transactionId',$content['txId']);
-						update_option('mo_2factor_temp_status',$content['phoneDelivery']['sendStatus']);
-						update_option('mo_2factor_registration_status','MO_2_FACTOR_OTP_DELIVERED_SUCCESS');
-						$this->mo_auth_show_success_message();
-					}else{
-						update_option('mo2f_message','Your account has been created successfully but there was an error in sending SMS to your phone. Please click on Resend OTP to try again.');
-						update_option('mo_2factor_temp_status',$content['phoneDelivery']['sendStatus']);
-						update_option('mo_2factor_registration_status','MO_2_FACTOR_OTP_DELIVERED_FAILURE');
-						$this->mo_auth_show_error_message();
-					}
-				} //registration and otp send completed
+				}
 			} else {
 				update_option( 'mo2f_message', 'Password and Confirm password do not match.');
 				delete_option('verify_customer');
 				$this->mo_auth_show_error_message();
 			}
-			update_option('mo2f_password', '');
 		}
 		if(isset($_POST['option']) and $_POST['option'] == "mo_auth_verify_customer"){	//register the admin to miniOrange
 		
@@ -227,6 +224,7 @@ class Miniorange_Authentication {
 				update_option( 'mo2f_customer_token', $customerKey['token']);
 				update_option('mo2f_phone', $customerKey['phone']);
 				update_option('mo2f_password', '');
+				update_option('mo_2factor_registration_status','MO_2_FACTOR_CUSTOMER_REGISTERED_SUCCESS');
 				$this->mo2f_get_qr_code_for_mobile(get_option('mo2f_email'));
 				update_option( 'mo2f_message', 'Your account has been retrieved successfully.');
 				$this->mo_auth_show_success_message();
@@ -239,15 +237,15 @@ class Miniorange_Authentication {
 		}
 		if(isset($_POST['option']) and trim($_POST['option']) == "mo_2factor_resend_otp"){
 			$customer = new Customer_Setup();
-			$content = json_decode($customer->send_otp_token(get_option('mo2f_email'),'SMS'), true);
+			$content = json_decode($customer->send_otp_token(get_option('mo2f_email'),'EMAIL',$this->defaultCustomerKey,$this->defaultApiKey), true);
 			if(strcasecmp($content['status'], 'SUCCESS') == 0) {
-				update_option( 'mo2f_message', 'An SMS has been sent to ' . MO2f_Utility::get_hidden_phone( get_option('mo2f_phone') ) . '. Please enter the OTP to verify your phone number.');
+				update_option( 'mo2f_message', 'An OTP has been sent to ' . ( get_option('mo2f_email') ) . '. Please enter the otp below to verify your email. ');
 				update_option('mo2f_transactionId',$content['txId']);
 				update_option('mo_2factor_temp_status',$content['phoneDelivery']['sendStatus']);
 				update_option('mo_2factor_registration_status','MO_2_FACTOR_OTP_DELIVERED_SUCCESS');
 				$this->mo_auth_show_success_message();
 			}else{
-				update_option('mo2f_message','Error in sending SMS to phone. Please click on Resend OTP to try again.');
+				update_option('mo2f_message','There was an error in sending email. Please click on Resend OTP to try again.');
 				update_option('mo_2factor_temp_status',$content['phoneDelivery']['sendStatus']);
 				update_option('mo_2factor_registration_status','MO_2_FACTOR_OTP_DELIVERED_FAILURE');
 				$this->mo_auth_show_error_message();
@@ -266,19 +264,9 @@ class Miniorange_Authentication {
 			}
 			
 			$customer = new Customer_Setup();
-			$content = json_decode($customer->validate_otp_token( 'SMS', null, get_option('mo2f_transactionId'), $otp_token ),true);
+			$content = json_decode($customer->validate_otp_token( 'EMAIL', null, get_option('mo2f_transactionId'), $otp_token ),true);
 			if(strcasecmp($content['status'], 'SUCCESS') == 0) {
-				delete_option('mo_2factor_temp_status');
-				$registerMobile = new Two_Factor_Setup();
-				$content = $registerMobile->register_mobile(get_option('mo2f_email'));
-				$response = json_decode($content, true);
-				if(json_last_error() == JSON_ERROR_NONE) {
-					update_option( 'mo2f_message','Your OTP is successfully validated.');
-					update_option( 'mo2f_qrCode', $response['qrCode']);
-					update_option( 'mo2f_transactionId', $response['txId']);
-					update_option('mo_2factor_registration_status','MO_2_FACTOR_INITIALIZE_MOBILE_REGISTRATION');
-					$this->mo_auth_show_success_message();
-				}
+				$this->mo2f_create_customer();
 			}else{
 				update_option( 'mo2f_message','Invalid OTP. Please try again.');
 				update_option('mo_2factor_temp_status','FAILURE');
@@ -352,6 +340,37 @@ class Miniorange_Authentication {
 				}
 
 			}
+		}
+	}
+	
+	function mo2f_create_customer(){
+		$customer = new Customer_Setup();
+		$customerKey = json_decode($customer->create_customer(), true);
+		if(strcasecmp($customerKey['status'], 'CUSTOMER_USERNAME_ALREADY_EXISTS') == 0) {	//admin already exists in miniOrange
+			$content = $customer->get_customer_key();
+			$customerKey = json_decode($content, true);
+			if(json_last_error() == JSON_ERROR_NONE) {
+				update_option( 'mo2f_customerKey', $customerKey['id']);
+				update_option( 'mo2f_api_key', $customerKey['apiKey']);
+				update_option( 'mo2f_customer_token', $customerKey['token']);
+				update_option('mo2f_password', '');
+				update_option('mo_2factor_registration_status','MO_2_FACTOR_CUSTOMER_REGISTERED_SUCCESS');
+				$this->mo2f_get_qr_code_for_mobile(get_option('mo2f_email'));
+				update_option( 'mo2f_message', 'Your account has been retrieved successfully.');
+				$this->mo_auth_show_success_message();
+			} else {
+				update_option( 'mo2f_message', 'You already have an account with miniOrange. Please enter a valid password.');
+				update_option('mo_2factor_registration_status','MO_2_FACTOR_VERIFY_CUSTOMER');
+				$this->mo_auth_show_error_message();
+			}
+		}else{
+			update_option( 'mo2f_customerKey', $customerKey['id']);
+			update_option( 'mo2f_api_key', $customerKey['apiKey']);
+			update_option( 'mo2f_customer_token', $customerKey['token']);
+			update_option('mo2f_password', '');
+			$this->mo2f_get_qr_code_for_mobile(get_option('mo2f_email'));
+			update_option( 'mo2f_message', 'Your OTP Verified successfully. Please scan the QR-Code below to register your mobile.');
+			$this->mo_auth_show_success_message();
 		}
 	}
 	

@@ -29,6 +29,36 @@ class Customer_Setup{
 	public $customerKey;
 	public $transactionId;
 	
+	function check_customer() {
+			$url 	= get_option('mo2f_host_name') . "/moas/rest/customer/check-if-exists";
+			$ch 	= curl_init( $url );
+			$email 	= get_option("mo2f_email");
+
+			$fields = array(
+				'email' 	=> $email,
+			);
+			$field_string = json_encode( $fields );
+
+			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+			curl_setopt( $ch, CURLOPT_ENCODING, "" );
+			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );    # required for https urls
+
+			curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
+			curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'charset: UTF - 8', 'Authorization: Basic' ) );
+			curl_setopt( $ch, CURLOPT_POST, true);
+			curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+			$content = curl_exec( $ch );
+			if( curl_errno( $ch ) ){
+				echo 'Request Error:' . curl_error( $ch );
+				exit();
+			}
+			curl_close( $ch );
+
+			return $content;
+	}
+	
 	function create_customer(){
 		$url = get_option('mo2f_host_name') . '/moas/rest/customer/add';
 		$ch = curl_init($url);
@@ -111,15 +141,15 @@ class Customer_Setup{
 		return $content;
 	}
 	
-	function send_otp_token($uKey,$authType){
+	function send_otp_token($uKey,$authType,$cKey,$apiKey){
 		$url = get_option('mo2f_host_name') . '/moas/api/auth/challenge';
 		$ch = curl_init($url);
 		
 		/* The customer Key provided to you */
-		$customerKey = get_option('mo2f_customerKey');
+		$customerKey = $cKey;
 	
 		/* The customer API Key provided to you */
-		$apiKey = get_option('mo2f_customer_token');
+		$apiKey = $apiKey;
 	
 		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
 		$currentTimeInMillis = round(microtime(true) * 1000);
@@ -132,11 +162,20 @@ class Customer_Setup{
 		$timestampHeader = "Timestamp: " . $currentTimeInMillis;
 		$authorizationHeader = "Authorization: " . $hashValue;
 		
-		$fields = array(
-			'customerKey' => $customerKey,
-			'username' => $uKey,
-			'authType' => $authType,
-		);
+		$fields = '';
+		if( $authType == 'EMAIL' ) {
+			$fields = array(
+				'customerKey' => $customerKey,
+				'email' => $uKey,
+				'authType' => $authType,
+			);
+		}else{
+			$fields = array(
+				'customerKey' => $customerKey,
+				'username' => $uKey,
+				'authType' => $authType,
+			);
+		}
 		$field_string = json_encode($fields);
 		
 		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
@@ -168,7 +207,7 @@ class Customer_Setup{
 		$customerKey = get_option('mo2f_customerKey');
 	
 		/* The customer API Key provided to you */
-		$apiKey = get_option('mo2f_customer_token');
+		$apiKey = get_option('mo2f_api_key');
 	
 		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
 		$currentTimeInMillis = round(microtime(true) * 1000);
@@ -225,7 +264,7 @@ class Customer_Setup{
 		$ch = curl_init($url);
 		global $current_user;
 		get_currentuserinfo();
-		$query = '[miniOrange 2 factor authentication]: ' . $query;
+		$query = '[miniOrange 2 factor authentication plugin]: ' . $query;
 		$fields = array(
 			'firstName'			=> $current_user->user_firstname,
 			'lastName'	 		=> $current_user->user_lastname,

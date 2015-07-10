@@ -48,7 +48,7 @@ class Miniorange_Mobile_Login{
 						if(get_option('mo_2factor_admin_mobile_registration_status') == 'MO_2_FACTOR_SUCCESS'){
 							update_option( 'mo2f_login_email', $user->user_email);
 							$challengeMobile = new Customer_Setup();
-							$content = $challengeMobile->send_otp_token($user->user_email, 'MOBILE AUTHENTICATION');
+							$content = $challengeMobile->send_otp_token($user->user_email, 'MOBILE AUTHENTICATION',get_option('mo2f_customerKey'),get_option('mo2f_api_key'));
 							$response = json_decode($content, true);
 							if(json_last_error() == JSON_ERROR_NONE) {
 								update_option( 'mo2f-login-qrCode', $response['qrCode']);

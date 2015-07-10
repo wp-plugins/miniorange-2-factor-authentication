@@ -6,14 +6,7 @@
 				<tr>
 					<td style="width:60%;vertical-align:top;">
 						<?php
-							if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_VERIFY_CUSTOMER') {
-								mo2f_show_verify_password_page();
-							} else if(trim(get_option('mo2f_email')) != '' && trim(get_option('mo2f_api_key')) == '' && get_option('new_registration') != 'true'){
-								mo2f_show_verify_password_page();
-							} else if(!mo2f_is_customer_registered()){
-								delete_option('password_mismatch');
-								mo2f_show_new_registration_page();
-							} else if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_OTP_DELIVERED_SUCCESS'){
+							if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_OTP_DELIVERED_SUCCESS'){
 								delete_option('mo_2factor_temp_status');
 								mo2f_show_otp_validation_page();
 							} else if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_OTP_DELIVERED_FAILURE'){
@@ -22,7 +15,14 @@
 								initialize_mobile_registration();
 							} else if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_PLUGIN_SETTINGS'){
 								show_2_factor_login_settings();
-							}
+							}else if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_VERIFY_CUSTOMER') {
+								mo2f_show_verify_password_page();
+							} else if(trim(get_option('mo2f_email')) != '' && trim(get_option('mo2f_api_key')) == '' && get_option('new_registration') != 'true'){
+								mo2f_show_verify_password_page();
+							} else if(!mo2f_is_customer_registered()){
+								delete_option('password_mismatch');
+								mo2f_show_new_registration_page();
+							} 
 						?>
 					</td>
 					<td style="vertical-align:top;padding-left:1%;">
@@ -55,12 +55,16 @@
 							 <td><input class="mo2f_table_textbox" type="text" name="phone" id="phone" autofocus="true" required title="Phone with courntry code eg. +1xxxxxxxxxx" placeholder="Phone with courntry code eg. +1xxxxxxxxxx" value="<?php echo get_option('mo2f_phone');?>" pattern="[\+]?[0-9]{1,4}\s?[0-9]{10}"/></td>
 							</tr>
 							<tr>
+								<td></td>
+								<td>We will call only if you need support.</td>
+							</tr>
+							<tr>
 							<td><b><font color="#FF0000">*</font>Password:</b></td>
-							 <td><input class="mo2f_table_textbox" type="password" required name="password" placeholder="Choose your password with minimun 8 characters" /></td>
+							 <td><input class="mo2f_table_textbox" type="password" required name="password" placeholder="Choose your password with minimun 6 characters" /></td>
 							</tr>
 							<tr>
 							<td><b><font color="#FF0000">*</font>Confirm Password:</b></td>
-							 <td><input class="mo2f_table_textbox" type="password" required name="confirmPassword" placeholder="Confirm your password with minimum 8 characters" /></td>
+							 <td><input class="mo2f_table_textbox" type="password" required name="confirmPassword" placeholder="Confirm your password with minimum 6 characters" /></td>
 							</tr>
 							<tr><td>&nbsp;</td></tr>
 						  <tr>
