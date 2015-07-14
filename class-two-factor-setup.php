@@ -128,5 +128,108 @@ class Two_Factor_Setup{
 		curl_close($ch);
 		return $content;
 	}
+	
+	function mo_check_user_already_exist($email){
+		$url = get_option('mo2f_host_name') . '/moas/api/admin/users/search';
+		$ch = curl_init($url);
+		
+		/* The customer Key provided to you */
+		$customerKey = get_option('mo2f_customerKey');
+	
+		/* The customer API Key provided to you */
+		$apiKey = get_option('mo2f_api_key');
+	
+		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
+		$currentTimeInMillis = round(microtime(true) * 1000);
+	
+		/* Creating the Hash using SHA-512 algorithm */
+		$stringToHash = $customerKey . $currentTimeInMillis . $apiKey;
+		$hashValue = hash("sha512", $stringToHash);
+	
+		$customerKeyHeader = "Customer-Key: " . $customerKey;
+		$timestampHeader = "Timestamp: " . $currentTimeInMillis;
+		$authorizationHeader = "Authorization: " . $hashValue;
+		
+		$fields = array(
+			'username' => $email
+		);
+		
+		$field_string = json_encode($fields);
+
+		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		curl_setopt( $ch, CURLOPT_ENCODING, "" );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );    # required for https urls
+
+		curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json", $customerKeyHeader, 
+											$timestampHeader, $authorizationHeader));
+		curl_setopt( $ch, CURLOPT_POST, true);
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		$content = curl_exec($ch);
+
+		if(curl_errno($ch)){
+			echo 'Request Error:' . curl_error($ch);
+		   exit();
+		}
+
+
+		curl_close($ch);
+		return $content;
+	}
+	
+	function mo_create_user($currentuser,$email){
+		$url = get_option('mo2f_host_name') . '/moas/api/admin/users/create';
+		$ch = curl_init($url);
+		
+		/* The customer Key provided to you */
+		$customerKey = get_option('mo2f_customerKey');
+	
+		/* The customer API Key provided to you */
+		$apiKey = get_option('mo2f_api_key');
+	
+		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
+		$currentTimeInMillis = round(microtime(true) * 1000);
+	
+		/* Creating the Hash using SHA-512 algorithm */
+		$stringToHash = $customerKey . $currentTimeInMillis . $apiKey;
+		$hashValue = hash("sha512", $stringToHash);
+	
+		$customerKeyHeader = "Customer-Key: " . $customerKey;
+		$timestampHeader = "Timestamp: " . $currentTimeInMillis;
+		$authorizationHeader = "Authorization: " . $hashValue;
+		
+		$fields = array(
+			'customerKey' => $customerKey,
+			'username' => $email,
+			'firstName' => $currentuser->user_firstname,
+			'lastName' => $currentuser->user_lastname
+		);
+		
+		$field_string = json_encode($fields);
+
+		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		curl_setopt( $ch, CURLOPT_ENCODING, "" );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );    # required for https urls
+
+		curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json", $customerKeyHeader, 
+											$timestampHeader, $authorizationHeader));
+		curl_setopt( $ch, CURLOPT_POST, true);
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		$content = curl_exec($ch);
+
+		if(curl_errno($ch)){
+			echo 'Request Error:' . curl_error($ch);
+		   exit();
+		}
+
+
+		curl_close($ch);
+		return $content;
+	}
 }
 ?>

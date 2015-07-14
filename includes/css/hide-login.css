@@ -21,3 +21,15 @@ body.login div#login p#nav {
 body.login div#login form#loginform input#user_pass {
 	display: none;
 }
+
+body.login div#login div#login_error{
+	display: none;
+}
+body.login div#login div#login_error1{
+	border-left: 4px solid #dd3d36;
+	margin-left: 0;
+	padding: 12px;
+	background: #fff;
+	-webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
+	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
+}

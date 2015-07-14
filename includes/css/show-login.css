@@ -21,3 +21,6 @@ body.login div#login p#nav {
 body.login div#login form#loginform input#user_pass {
 	display: block;
 }
+body.login div#login div#login_error{
+	display: block;
+}

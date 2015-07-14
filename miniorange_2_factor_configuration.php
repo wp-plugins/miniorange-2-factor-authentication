@@ -1,27 +1,40 @@
 <?php
-	function mo_2_factor_register() {
+	function mo_2_factor_register($current_user) {
+		if(mo_2factor_is_curl_installed()==0){ ?>
+			<p style="color:red;">(Warning: <a href="http://php.net/manual/en/curl.installation.php" target="_blank">PHP CURL extension</a> is not installed or disabled)</p>
+		<?php
+		}
 		?>
 		<div class="mo2f_container">
 			<table style="width:100%;">
 				<tr>
 					<td style="width:60%;vertical-align:top;">
 						<?php
-							if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_OTP_DELIVERED_SUCCESS'){
-								delete_option('mo_2factor_temp_status');
+							
+							if(get_option( 'mo_2factor_admin_registration_status') == 'MO_2_FACTOR_CUSTOMER_REGISTERED_SUCCESS' && get_option( 'mo2f_miniorange_admin') != $current_user->ID){
+								if(get_user_meta($current_user->ID,'mo_2factor_user_registration_with_miniorange',true) != 'SUCCESS'){
+									mo2f_register_additional_admin($current_user);
+									delete_user_meta($current_user->ID,'mo_2factor_user_registration_status');
+								}
+							}
+							
+							if(get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_OTP_DELIVERED_SUCCESS' || get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_OTP_DELIVERED_FAILURE'){
 								mo2f_show_otp_validation_page();
-							} else if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_OTP_DELIVERED_FAILURE'){
-								mo2f_show_otp_validation_page();
-							} else if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_INITIALIZE_MOBILE_REGISTRATION'){
-								initialize_mobile_registration();
-							} else if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_PLUGIN_SETTINGS'){
+							} else if(get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_INITIALIZE_MOBILE_REGISTRATION'){
+								if(isset($_SESSION[ 'mo2f_qrCode' ])){
+									initialize_mobile_registration($current_user);
+								}else{
+									mo2f_get_qr_code_for_mobile(get_user_meta($current_user->ID,'mo_2factor_map_id_with_email',true),$current_user->ID);
+									initialize_mobile_registration($current_user);
+								}
+								
+							} else if(get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_PLUGIN_SETTINGS'){
 								show_2_factor_login_settings();
-							}else if(get_option('mo_2factor_registration_status') == 'MO_2_FACTOR_VERIFY_CUSTOMER') {
-								mo2f_show_verify_password_page();
-							} else if(trim(get_option('mo2f_email')) != '' && trim(get_option('mo2f_api_key')) == '' && get_option('new_registration') != 'true'){
+							}else if(get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_VERIFY_CUSTOMER') {
 								mo2f_show_verify_password_page();
 							} else if(!mo2f_is_customer_registered()){
 								delete_option('password_mismatch');
-								mo2f_show_new_registration_page();
+								mo2f_show_new_registration_page($current_user);
 							} 
 						?>
 					</td>
@@ -34,9 +47,7 @@
 		<?php
 	}
 
-	function mo2f_show_new_registration_page() {
-		global $current_user;
-		get_currentuserinfo();
+	function mo2f_show_new_registration_page($current_user) {
 		?>
 			<!--Register with miniOrange-->
 			<form name="f" method="post" action="">
@@ -44,10 +55,11 @@
 				<div class="mo2f_table_layout">
 					<div id="toggle1" class="panel_toggle"><h3>Register with miniOrange</h3></div>
 					<div id="panel1">
+						<div><b>Please enter a valid email id that you have access to. You will be able to move forward after verifying an OTP that we will send to this email.</b></div><br />
 						<table class="mo2f_settings_table">
 							<tr>
 							<td><b><font color="#FF0000">*</font>Email:</b></td>
-							<td><input class="mo2f_table_textbox" type="email" name="email" readonly required placeholder="person@example.com" value="<?php echo $current_user->user_email;?>"/></td>
+							<td><input class="mo2f_table_textbox" type="email" name="email" required placeholder="person@example.com" value="<?php echo $current_user->user_email;?>"/></td>
 							</tr>
 
 							<tr>
@@ -111,6 +123,13 @@
 							</tr>
 						</form>
 				</table>
+				<form name="f" method="post" action="">
+					<input type="hidden" name="option" value="mo_2factor_gobackto_registration_page"/>
+					<br /><br /><br />
+					<div><center><input type="submit" name="mo2f_goback" id="mo2f_goback" value="Back" class="button button-primary button-large" /></center></div>
+					
+					
+				</form>
 			</div>
 			<br/>
 			<br/>
@@ -146,32 +165,36 @@
 	}
 	
 	function show_2_factor_login_settings() {
-	?>
-		<div class="mo2f_table_layout">
-			<div><h3>Test miniOrange 2-factor</h3></div>
-			<div><b>Just logout to check how miniOrange 2 factor works.
-			Follow these basic steps to login with miniOrange 2 factor authentication.</b></div>
-				<br />
-			<ul>
-				<li><b>Step 1:</b> Enter your username.</li>
-				<li><b>Step 2:</b> Click on <i>Login with miniOrange</i>.</li>
-				<li><b>Step 3:</b> Scan QR code from your miniOrange mobile app. This requires internet connection.</li>
-				<li><b>Step 4:</b> If your mobile is offline, click on <i>Click here if your phone is offline</i>.</li>
-				<li><b>Step 5:</b> In your miniOrange mobile app, click on Soft Token and enter the OTP.</li>
-				<li><b>Step 6:</b> Click on <i>Validate.</i></li>
-			</ul>
-			Once you are authenticated, you will be logged in.	<br /><br />	
-			<table>
-				<tr>
-					<td style="vertical-align:top;"><a href="<?php echo wp_login_url() . '?action=logout' ?>" class="button button-primary button-large button-green">Log Out</a></td>
-					<td><form name="f" method="post" action="">
-							<input type="hidden" name="option" value="mo_auth_refresh_mobile_qrcode" />
-							<input type="submit" name="submit" value="Reconfigure your mobile" class="button button-primary button-large"/><br /><br />				
-						</form>
-					</td>
-				</tr>
-			</table>
+		echo mo2f_show_instruction_to_allusers();
+		?>
+		<br />
+		<div class="mo2f_small_layout">
+			<form name="f" id="mowp_admin_activationform" method="post" action="">
+				<h3>Plugin activation settings</h3>
+				<input type="checkbox" id="mo2f_adminrole_activation" name="mo2f_adminrole_activation" value="1" <?php echo !get_option('mo2f_admin_disabled_status') ? 'checked="checked"' : ''; ?> />Enable plugin for admins.
+				<input type="hidden" name="option" value="mo_auth_admin_activation" />
+			</form>
+			<form name="f" id="mowp_activationform" method="post" action="">
+				<input type="checkbox" id="mo2f_role_activation" name="mo2f_role_activation" value="1" <?php echo get_option('mo2f_disabled_status') ? 'checked="checked"' : ''; ?> />Enable plugin for all other users.<br /><br />
+				<div id="mo2f_note"><b>Note:</b> Admins are required to test 2 factor plugin and if they are successfully logged in then enable the plugin for other roles.</div>
+				<input type="hidden" name="option" value="mo_auth_user_activation" />
+			</form><br />
+			<form name="f" id="mowp_forgotphone_form" method="post" action="">
+				<input type="checkbox" id="mo2f_forgotphone" name="mo2f_forgotphone" value="1" <?php echo get_option('mo2f_enable_forgotphone') ? 'checked="checked"' : ''; ?> />Enable Forgot Phone.<br /><br /><div id="mo2f_note"><b>Note:</b> Checking this option will enable Forgot My Phone for all the users during Login. An OTP over registered email will be send to verify the user. User has to enter OTP to bypass mobile authentication.</div>
+				<input type="hidden" name="option" value="mo2f_forgotphone_activation" />
+			</form>
 		</div>
+		<script>
+			 jQuery('#mo2f_role_activation').change(function() {
+				jQuery('#mowp_activationform').submit();
+			});
+			jQuery('#mo2f_adminrole_activation').change(function() {
+				jQuery('#mowp_admin_activationform').submit();
+			});
+			jQuery('#mo2f_forgotphone').change(function() {
+				jQuery('#mowp_forgotphone_form').submit();
+			});
+		</script>
 	<?php
 	}
 
@@ -204,105 +227,35 @@
 			</form>
 	<?php	}
 	
-	function initialize_mobile_registration() {
-		$data = get_option('mo2f_qrCode');
-		$url = get_option('mo2f_host_name');
-		?>
-		<div class="mo2f_table_layout">
-			<div id="toggle1" class="panel_toggle"><h2>Register your mobile</h2></div>				
-			<div class="col-sm-6 col-md-4">
-				<div class="panel panel-success">
-					<table>
-					<div><h3> Step 1: Download the miniOrange <span style="color: #F78701;">i'm me</span> app</h3></div>
-					<tr>
-					<div class="panel-body">
-						<td style="width:55%;">
-						<p class="content_fonts" style="margin-bottom:2px!important;"><b>iPhone Users</b></p>
-						<ol>
-						<li>Go to App Store</li>
-						<li>Search for <b>miniOrange</b></li>
-						<li>Download and install the mobile app</li>
-						</ol>
-							<span><a target="_blank" href="https://itunes.apple.com/us/app/miniorange-authenticator/id796303566?ls=1"><img src="<?php echo plugins_url( 'includes/images/appstore.png' , __FILE__ );?>" style="width:120px; height:45px; margin-left:6px;"></a></span><br><br>
-						</td>
-						<td>
-						<p class="content_fonts" style="margin-bottom:2px!important;margin-top:-10px;"><b>Android Users</b></p>
-						<ol>
-						<li> Go to Google Play Store.</li>
-						<li> Search for <b>miniOrange.</b></li>
-						<li> Download and install the mobile app.</li>
-						</ol>
-						<a target="_blank" href="https://play.google.com/store/apps/details?id=com.miniorange.authbeta"><img src="<?php echo plugins_url( 'includes/images/playStore.png' , __FILE__ );?>" style="width:120px; height:=45px; margin-left:6px;"></a>
-						</td>
-					</div>
-					</tr>
-					</table>
-				</div>
-			</div>
-
-				<div><h3>Step 2: Scan QR code</h3></div>
-				<div id="panel1">
-					<p><b>Open your miniOrange i'm me app and click on Configure button to scan the QR code.</b></p>
-					<table class="mo2f_settings_table">
-						<div id="displayQrCode"> <?php echo '<img src="data:image/jpg;base64,' . $data . '" />'; ?>
-						</div>
-					</table>
-					<br />
-					<div id="refrsh_qrcode" style="display:none;">
-					
-					<form name="f" method="post" action="">
-						<input type="hidden" name="option" value="mo_auth_refresh_mobile_qrcode" />
-						<input type="submit" name="submit" value="Refresh to scan Qrcode again" class="button button-primary button-large button-green" />
-					</form>
-					</div>
-					<br />
-					<div id="mobile_registered" >
-					<form name="f" method="post" action="">
-						<input type="hidden" name="option" value="mo_auth_setting_configuration" />
-						<input type="submit" name="submit" id="mo2f_config" value="Configure Your Settings" class="button button-primary button-large" />
-					</form>
-					<form name="f" method="post" id="mobile_register_form" action="">
-						<input type="hidden" name="option" value="mo_auth_mobile_registration_complete" />
-					</form>
-					</div>
-					<br />
-				</div>
-			</div>
-			<script>
-			jQuery("#phone").intlTelInput();
-			jQuery('#refrsh_qrcode').hide();
-			var timeout;
-			pollMobileRegistration();
-			function pollMobileRegistration()
-			{
-				var transId = "<?php echo get_option('mo2f_transactionId');  ?>";
-				var jsonString = "{\"txId\":\""+ transId + "\"}";
-				var postUrl = "<?php echo $url;  ?>" + "/moas/api/auth/registration-status";
-				jQuery.ajax({
-					url: postUrl,
-					type : "POST",
-					dataType : "json",
-					data : jsonString,
-					contentType : "application/json; charset=utf-8",
-					success : function(result) {
-						var status = JSON.parse(JSON.stringify(result)).status;
-						if (status == 'SUCCESS') {
-							var content = "<div id='success' style='margin-left: 20px; margin: top:23px;'><img src='" + "<?php echo plugins_url( 'includes/images/right.png' , __FILE__ );?>" + "' /></div>";
-							jQuery("#displayQrCode").empty();
-							jQuery("#displayQrCode").append(content);
-							setTimeout(function(){jQuery("#mobile_register_form").submit();}, 1000);
-						} else if (status == 'ERROR' || status == 'FAILED') {
-							var content = "<div id='error' style='margin-left: 20px; margin: top:23px;'><img src='" + "<?php echo plugins_url( 'includes/images/wrong.png' , __FILE__ );?>" + "' /></div>";
-							jQuery("#displayQrCode").empty();
-							jQuery("#displayQrCode").append(content);
-							jQuery('#refrsh_qrcode').show();
-						} else {
-							timeout = setTimeout(pollMobileRegistration, 3000);
-						}
-					}
-				});
-			}
-</script>
-		<?php
-	}
+	function mo2f_register_additional_admin($current_user){
 	?>
+		<form name="f" method="post" action="">
+			<div class="mo2f_table_layout">
+				<div id="toggle1" class="panel_toggle"><center><h3><b>miniOrange 2 Factor Authentication has been enabled for you. Please set up your account and register yourself by following the steps.</b></h3></center></div>
+				<div id="panel1">
+					<table class="mo2f_settings_table">
+						
+						<tr>
+							<td><center><div class="alert-box"><input class="mo2f_table_textbox" type="email" autofocus="true" name="mo_useremail" style="text-align:center;height:40px;font-size:24px;" required placeholder="person@example.com" value="<?php echo $current_user->user_email;?>"/></div></center></td>
+						</tr>
+						<tr>
+							<td><center><h4>Please enter a valid email id that you have access to. You will be able to login after verifying an OTP that we will send to this email in case you forgot or lost your phone.</h4></center></td>
+						</tr>
+						<tr><td></td></tr>
+						<tr><td></td></tr>
+						<tr><td></td></tr>
+						<tr><td></td></tr>
+						<tr><td></td></tr>
+						<tr><td></td></tr>
+						<tr><td></td></tr>
+						<tr><td></td></tr>
+						<tr>
+							<td><input type="hidden" name="miniorange_user_reg_nonce" value="<?php echo wp_create_nonce('miniorange-2-factor-user-reg-nonce'); ?>" />
+							<center><input type="submit" name="miniorange_get_started" id="miniorange_get_started" class="button button-primary button-large extra-large" value="Get Started" /></center> </td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+	<?php
+	}

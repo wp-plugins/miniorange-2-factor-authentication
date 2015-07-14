@@ -28,5 +28,12 @@ class MO2f_Utility{
 		$hidden_phone = 'xxxxxxx' . substr($phone,strlen($phone) - 3);
 		return $hidden_phone;
 	}
+	
+	public static function mo2f_check_empty_or_null( $value ) {
+		if( ! isset( $value ) || empty( $value ) ) {
+			return true;
+		}
+		return false;
+	}
 }
 ?>

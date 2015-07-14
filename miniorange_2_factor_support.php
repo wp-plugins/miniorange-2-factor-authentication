@@ -1,24 +1,27 @@
 <?php
 
 function mo2f_support(){
+global $wpdb;
+global $current_user;
+get_currentuserinfo();
 ?>
 	<div class="mo2f_support_layout">
 		<h3>Support</h3>
 			<form name="f" method="post" action="">
 				<div>Need any help? Just send us a query so we can help you. <br /><br /></div>
 				<div>
-					<table>
+					<table style="width:95%;">
 						<tr><td>
-							<input type="email" class="mo2f_table_textbox" id="query_email" name="query_email" value="<?php echo get_option('mo2f_email'); ?>" placeholder="Enter your email" required="true" />
+							<input type="email" class="mo2f_table_textbox" id="query_email" name="query_email" value="<?php echo get_user_meta($current_user->ID,'mo_2factor_map_id_with_email',true); ?>" placeholder="Enter your email" required="true" />
 							</td>
 						</tr>
 						<tr><td>
-							<input type="text" class="mo2f_table_textbox" name="query_phone" id="query_phone" value="<?php echo get_option('mo2f_phone'); ?>" placeholder="Enter your phone"/>
+							<input type="text" class="mo2f_table_textbox" name="query_phone" id="query_phone" value="<?php echo $current_user->ID == get_option('mo2f_miniorange_admin') ? get_option('mo2f_phone') : ''; ?>" placeholder="Enter your phone"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<textarea id="query" name="query" style="border-radius:4px;" cols="52" rows="7" style="resize: vertical;" onkeyup="mo2f_valid(this)" onblur="mo2f_valid(this)" onkeypress="mo2f_valid(this)" placeholder="Write your query here"></textarea>
+								<textarea id="query" name="query" style="resize: vertical;border-radius:4px;width:100%;height:143px;" onkeyup="mo2f_valid(this)" onblur="mo2f_valid(this)" onkeypress="mo2f_valid(this)" placeholder="Write your query here"></textarea>
 							</td>
 						</tr>
 					</table>

@@ -30,34 +30,35 @@ class Customer_Setup{
 	public $transactionId;
 	
 	function check_customer() {
-			$url 	= get_option('mo2f_host_name') . "/moas/rest/customer/check-if-exists";
-			$ch 	= curl_init( $url );
-			$email 	= get_option("mo2f_email");
+		$url 	= get_option('mo2f_host_name') . "/moas/rest/customer/check-if-exists";
+		$ch 	= curl_init( $url );
+		$email 	= get_option("mo2f_email");
 
-			$fields = array(
-				'email' 	=> $email,
-			);
-			$field_string = json_encode( $fields );
+		$fields = array(
+			'email' 	=> $email,
+		);
+		$field_string = json_encode( $fields );
 
-			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-			curl_setopt( $ch, CURLOPT_ENCODING, "" );
-			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
-			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );    # required for https urls
+		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		curl_setopt( $ch, CURLOPT_ENCODING, "" );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );    # required for https urls
 
-			curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
-			curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'charset: UTF - 8', 'Authorization: Basic' ) );
-			curl_setopt( $ch, CURLOPT_POST, true);
-			curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
-			$content = curl_exec( $ch );
-			if( curl_errno( $ch ) ){
-				echo 'Request Error:' . curl_error( $ch );
-				exit();
-			}
-			curl_close( $ch );
+		curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'charset: UTF - 8', 'Authorization: Basic' ) );
+		curl_setopt( $ch, CURLOPT_POST, true);
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		$content = curl_exec( $ch );
+		if( curl_errno( $ch ) ){
+			echo 'Request Error:' . curl_error( $ch );
+			exit();
+		}
+		curl_close( $ch );
 
-			return $content;
+		return $content;
 	}
+
 	
 	function create_customer(){
 		$url = get_option('mo2f_host_name') . '/moas/rest/customer/add';
@@ -70,7 +71,7 @@ class Customer_Setup{
 		
 		$fields = array(
 			'companyName' => $_SERVER['SERVER_NAME'],
-			'areaOfInterest' => 'miniOrange 2 Factor Authentication Plugin',
+			'areaOfInterest' => 'WordPress 2 Factor Authentication Plugin',
 			'firstname' => $current_user->user_firstname,
 			'lastname' => $current_user->user_lastname,
 			'email' => $this->email,
@@ -176,6 +177,7 @@ class Customer_Setup{
 				'authType' => $authType,
 			);
 		}
+		
 		$field_string = json_encode($fields);
 		
 		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
@@ -264,7 +266,7 @@ class Customer_Setup{
 		$ch = curl_init($url);
 		global $current_user;
 		get_currentuserinfo();
-		$query = '[miniOrange 2 factor authentication plugin]: ' . $query;
+		$query == '[WordPress 2 Factor Authentication Plugin]: ' . $query;
 		$fields = array(
 			'firstName'			=> $current_user->user_firstname,
 			'lastName'	 		=> $current_user->user_lastname,

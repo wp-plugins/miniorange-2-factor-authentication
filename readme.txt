@@ -3,7 +3,7 @@ Contributors: miniOrange
 Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, login, authy, Clef, 2 Factor, Google authenticator, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange
 Requires at least: 3.0.1
 Tested up to: 4.2.2
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -119,6 +119,9 @@ Please email us at info@miniorange.com or <a href="http://miniorange.com/contact
 
 == Changelog ==
 
+= 1.2 =
+* Added 2 factor for all users along with forgot phone functionality.
+
 = 1.1 =
 * Added email ID verification during registration.
 
@@ -126,6 +129,9 @@ Please email us at info@miniorange.com or <a href="http://miniorange.com/contact
 * First version supported with mobile auhthentication for admin only.
 
 == Upgrade Notice ==
+
+= 1.2 =
+* Added 2 factor for all users along with forgot phone functionality.
 
 = 1.1 = 
 * Added email ID verification during registration.
