@@ -65,7 +65,7 @@
 						<ol>
 						<li>Go to App Store</li>
 						<li>Search for <b>miniOrange</b></li>
-						<li>Download and install the mobile app</li>
+						<li>Download and install <span style="color: #F78701;"><b>miniOrange authenticator</b></span> app (<b>NOT MOAuth</b>)</li>
 						</ol>
 							<span><a target="_blank" href="https://itunes.apple.com/us/app/miniorange-authenticator/id796303566?ls=1"><img src="<?php echo plugins_url( 'includes/images/appstore.png' , __FILE__ );?>" style="width:120px; height:45px; margin-left:6px;"></a></span><br><br>
 						</td>
@@ -74,7 +74,7 @@
 						<ol>
 						<li> Go to Google Play Store.</li>
 						<li> Search for <b>miniOrange.</b></li>
-						<li> Download and install the mobile app.</li>
+						<li>Download and install miniOrange <span style="color: #F78701;"><b>i'm me</b></span> app (<b>NOT i'm me (alpha) </b>)</li>
 						</ol>
 						<a target="_blank" href="https://play.google.com/store/apps/details?id=com.miniorange.authbeta"><img src="<?php echo plugins_url( 'includes/images/playStore.png' , __FILE__ );?>" style="width:120px; height:=45px; margin-left:6px;"></a>
 						</td>
