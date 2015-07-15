@@ -3,7 +3,7 @@
 * Plugin Name: miniOrange 2 Factor Authentication
 * Plugin URI: http://miniorange.com
 * Description: This plugin enables login with mobile authentication as an additional layer of security.
-* Version: 1.2
+* Version: 1.3
 * Author: miniOrange
 * Author URI: http://miniorange.com
 * License: GPL2
