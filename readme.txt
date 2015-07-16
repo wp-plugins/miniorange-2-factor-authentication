@@ -50,17 +50,11 @@ For support please email us at info@miniorange.com or call us at +1 978 658 9387
 = I need to customize the plugin or I need support and help =
 Please email us at info@miniorange.com
 
-= I shot myself in the foot, I cant login? =
-Remove the plugin from the plugins directory. Copy it out and you should be all set.
-
-= I can login to wordpress but i want to go back to normal login. =
-Deactivate the plugin
-
-= I want 2 factor auth for all my users not just me. =
-Contact info@miniorange.com
-
 = My phone is offline, how do I login? =
 Use one time passcode login by clicking on 'click here if your phone is offline'
+
+= For any other query/problem/request =
+Please email us at info@miniorange.com or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>
 
 = My phone is lost, stolen or discharged. =
 Deactivate the plugin if you are logged in and after logging in activate and configure your new phone.
@@ -68,6 +62,12 @@ If you are logged out then remove the plugin from plugins directory. Copy it out
 
 = I am upgrading my phone. =
 You should go and reconfigure with your new phone after logging in. 
+
+= I shot myself in the foot, I cant login? =
+Remove the plugin from the plugins directory. Copy it out and you should be all set.
+
+= I can login to wordpress but i want to go back to normal login. =
+Deactivate the plugin
 
 = I verified the OTP received over my email and entering the same password that I registered with, but I am still getting the error message - "Invalid password." =
 Please write to us at info@miniorange.com and we will get back to you very soon.
@@ -79,10 +79,6 @@ One time passcodes (OTP) over SMS, OTP over Email, OTP over SMS and Email, Out o
 User Behavior.
 
 To know more about authentication methods, you can visit <a href="http://miniorange.com/strong_auth" target="_blank">miniOrange 2 Factor Authentication Methods</a>. If you want to have any other 2-factor for your WordPress site, <a href="http://miniorange.com/contact" target="_blank">Contact us</a>.
-
-= For any other query/problem/request =
-Please email us at info@miniorange.com or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>
-
 
 == Screenshots ==
 
