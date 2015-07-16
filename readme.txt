@@ -1,6 +1,6 @@
 === 2 Factor authentication plugin for wordpress ===
 Contributors: miniOrange
-Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, multi factor authentication, login, authy, Clef, 2 Factor, Google authenticator, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange
+Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, multi factor authentication, login, authy, Clef, 2 Factor, Google authenticator, yubico, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange
 Requires at least: 3.0.1
 Tested up to: 4.2.2
 Stable tag: 1.0.3
@@ -20,7 +20,26 @@ A highly secure two-factor authentication for all users of your site.
 . If your phone is offline, you can use a soft token to login
 . It offers inline registration of users so you can simply activate and configure the plugin and you are all set. 
 
-miniOrange supports 15+ authentication methods. For a complete list of authentication methods please visit http://miniorange.com/strong_auth 
+miniOrange supports 15+ authentication methods. For a complete list of authentication methods please visit http://miniorange.com/strong_auth . If you want to have any other 2-factor for your WordPress site, <a href="http://miniorange.com/contact" target="_blank">Contact us</a>.
+
+* One time passcodes (OTP) over SMS
+* OTP over Email
+* OTP over SMS and Email
+* Out of Band SMS
+* Out of Band Email
+* Soft Token
+* Push Notification
+* USB based Hardware token (<b>yubico</b>)
+* Security Questions
+* Mobile Authentication
+* Voice Authentication (Biometrics)
+* Phone Verification
+* Device Identification
+* Location
+* Time of Access
+* User Behavior
+
+You can choose from any of the above authentication methods to augment your password based authentication. miniOrange authentication service works with all phone types, from landlines to smart-phone platforms.
 
 For support please email us at info@miniorange.com or call us at +1 978 658 9387
 
@@ -53,12 +72,14 @@ Please email us at info@miniorange.com
 = My phone is offline, how do I login? =
 Use one time passcode login by clicking on 'click here if your phone is offline'
 
+= When I enter OTP from app after clicking on `click here if your phone is offline`, it says `Invalid OTP` =
+Click on the Home icon in the app and then press <b>Sync</b> button under 'Time correction for codes:'.
+
 = For any other query/problem/request =
 Please email us at info@miniorange.com or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>
 
 = My phone is lost, stolen or discharged. =
-Deactivate the plugin if you are logged in and after logging in activate and configure your new phone.
-If you are logged out then remove the plugin from plugins directory. Copy it out and you should be able to log back in using wordpress userid password.
+You should click on `Click here if you forgot your phone` link given after you click on login button. An OTP over your registered email will be send. Use that OTP to login into account. 
 
 = I am upgrading my phone. =
 You should go and reconfigure with your new phone after logging in. 
@@ -75,10 +96,10 @@ Please write to us at info@miniorange.com and we will get back to you very soon.
 = What other authentication methods do you suppport? =
 miniOrange authentication service has 15+ authentication methods.
 
-One time passcodes (OTP) over SMS, OTP over Email, OTP over SMS and Email, Out of Band SMS, Out of Band Email, Soft Token, Push Notification, USB based Hardware token, Security Questions, Mobile Authentication, Voice Authentication (Biometrics), Phone Verification, Device Identification, Location, Time of Access
+One time passcodes (OTP) over SMS, OTP over Email, OTP over SMS and Email, Out of Band SMS, Out of Band Email, Soft Token, Push Notification, USB based Hardware token (<b>yubico</b>), Security Questions, Mobile Authentication, Voice Authentication (Biometrics), Phone Verification, Device Identification, Location, Time of Access
 User Behavior.
 
-To know more about authentication methods, you can visit <a href="http://miniorange.com/strong_auth" target="_blank">miniOrange 2 Factor Authentication Methods</a>. If you want to have any other 2-factor for your WordPress site, <a href="http://miniorange.com/contact" target="_blank">Contact us</a>.
+To know more about authentication methods, please visit http://miniorange.com/strong_auth . If you want to have any other 2-factor for your WordPress site, <a href="http://miniorange.com/contact" target="_blank">Contact us</a>.
 
 == Screenshots ==
 
