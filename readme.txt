@@ -22,7 +22,7 @@ A highly secure two-factor authentication for all users of your site.
 
 miniOrange supports 15+ authentication methods. For a complete list of authentication methods please visit http://miniorange.com/strong_auth 
 
-For support please email us at info@miniorange.com or call us at +1 978 658 9387 FREE
+For support please email us at info@miniorange.com or call us at +1 978 658 9387
 
 
 == Installation ==
