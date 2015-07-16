@@ -1,6 +1,6 @@
 === 2 Factor authentication plugin for wordpress ===
 Contributors: miniOrange
-Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, multi factor authentication, login, authy, Clef, 2 Factor, Google authenticator, yubico, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange
+Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, multi factor authentication, Google authenticator, login, authy, Clef, 2 Factor, yubico, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange
 Requires at least: 3.0.1
 Tested up to: 4.2.2
 Stable tag: 1.0.3
