@@ -3,7 +3,7 @@
 * Plugin Name: miniOrange 2 Factor Authentication
 * Plugin URI: http://miniorange.com
 * Description: This plugin enables login with mobile authentication as an additional layer of security.
-* Version: 1.4
+* Version: 1.5
 * Author: miniOrange
 * Author URI: http://miniorange.com
 * License: GPL2
@@ -65,6 +65,7 @@ class Miniorange_Authentication {
 	} 
 	
 	function mo_2_factor_endsession() {
+		update_option('mo2f-login-message','You are now logged out');
 		session_destroy();
 	}
 	
@@ -167,6 +168,9 @@ class Miniorange_Authentication {
 	}
 
 	function miniorange_auth_save_settings(){
+		if( ! session_id() ) {
+			session_start();
+		}
 		global $current_user;
 		get_currentuserinfo();
 		if(isset($_POST['option']) and $_POST['option'] == "mo_auth_register_customer"){	//register the admin to miniOrange
@@ -276,7 +280,7 @@ class Miniorange_Authentication {
 			$customer = new Customer_Setup();
 			$content = json_decode($customer->send_otp_token(get_option('mo2f_email'),'EMAIL',$this->defaultCustomerKey,$this->defaultApiKey), true);
 			if(strcasecmp($content['status'], 'SUCCESS') == 0) {
-				update_option( 'mo2f_message', 'An OTP has been sent to ' . ( get_option('mo2f_email') ) . '. Please enter the otp below to verify your email. ');
+				update_option( 'mo2f_message', 'An OTP has been sent to ' . ( get_option('mo2f_email') ) . '. Please enter the OTP below to verify your email. ');
 				$_SESSION[ 'mo2f_transactionId' ] = $content['txId'];
 				update_user_meta($current_user->ID, 'mo_2factor_user_registration_status','MO_2_FACTOR_OTP_DELIVERED_SUCCESS');
 				$this->mo_auth_show_success_message();
