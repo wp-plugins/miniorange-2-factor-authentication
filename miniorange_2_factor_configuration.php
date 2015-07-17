@@ -213,6 +213,7 @@
 				<td><b><font color="#FF0000">*</font>Email:</b></td>
 				<td><input class="mo2f_table_textbox" type="email" name="email" required placeholder="person@example.com" value="<?php echo get_option('mo2f_email');?>"/></td>
 				</tr>
+				<tr>
 				<td><b><font color="#FF0000">*</font>Password:</b></td>
 				 <td><input class="mo2f_table_textbox" type="password" name="password" required placeholder="Enter your miniOrange password" /></td>
 				</tr>

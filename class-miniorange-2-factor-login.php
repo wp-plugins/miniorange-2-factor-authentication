@@ -64,6 +64,7 @@ class Miniorange_Mobile_Login{
 						}
 					}
 			   }else{
+					$this->remove_current_activity();
 					update_option( 'mo2f-login-message','Invalid Username.');
 					$this->mo_auth_show_error_message();
 				}
@@ -83,8 +84,8 @@ class Miniorange_Mobile_Login{
 					$response = json_decode($content, true);
 					if(json_last_error() == JSON_ERROR_NONE) {
 						if($response['status'] == 'SUCCESS'){				
-							remove_filter('authenticate', 'wp_authenticate_username_password', 20, 3);
-							add_filter('authenticate', array($this, 'mo2fa_login'), 20, 3);
+							remove_filter('authenticate', 'wp_authenticate_username_password', 10, 3);
+							add_filter('authenticate', array($this, 'mo2fa_login'), 10, 3);
 						}else{
 							update_option( 'mo2f-login-message','Invalid request.');
 							$this->remove_current_activity();
@@ -180,8 +181,8 @@ class Miniorange_Mobile_Login{
 					
 					if( username_exists( $currentuser->user_login )) { // user is a member 
 						if(strcasecmp($content['status'], 'SUCCESS') == 0) {
-							remove_filter('authenticate', 'wp_authenticate_username_password', 20, 3);
-							add_filter('authenticate', array($this, 'mo2fa_login'), 20, 3);
+							remove_filter('authenticate', 'wp_authenticate_username_password', 10, 3);
+							add_filter('authenticate', array($this, 'mo2fa_login'), 10, 3);
 						}else{
 							update_option( 'mo2f-login-message','Invalid OTP. Please try again.');
 							$_SESSION[ 'mo_2factor_login_status' ] == 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' ? $_SESSION[ 'mo_2factor_login_status' ] = 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' : $_SESSION[ 'mo_2factor_login_status' ] = 'MO_2_FACTOR_CHALLENGE_OTP_OVER_EMAIL';
@@ -225,36 +226,51 @@ class Miniorange_Mobile_Login{
 		}
 	}
 	
-	function mo2fa_default_login($user,$username,$password){
-		$user = new WP_User( $username );
-		if(!MO2f_Utility::mo2f_check_empty_or_null($username)){
+	function mo2fa_default_login($user,$password){
+		if(!MO2f_Utility::mo2f_check_empty_or_null($user)){
 			$user_id = $user->ID;
 			if(!strcasecmp(wp_sprintf_l( '%l', $user->roles ),'administrator')){
 				if(!get_option('mo2f_admin_disabled_status')){  /*checking if plugin is activated for admins */
-					$this->mo2f_verify_user_mobile_registration($user_id);
+					$this->mo2f_verify_user_mobile_registration($user,$password);
 				}else{
-					remove_filter('authenticate', array($this, 'mo2fa_default_login'), 20, 3);
-					add_filter('authenticate', 'wp_authenticate_username_password', 20, 3);
+					$this->mo2f_verify_and_authenticate_userlogin($user,$password);
 				}
 			}else{
 				if(get_option('mo2f_disabled_status')){ /*checking if plugin is activated for all other roles */
-					$this->mo2f_verify_user_mobile_registration($user_id);
+					$this->mo2f_verify_user_mobile_registration($user,$password);
 				}else{
-					remove_filter('authenticate', array($this, 'mo2fa_default_login'), 20, 3);
-					add_filter('authenticate', 'wp_authenticate_username_password', 20, 3);
+					$this->mo2f_verify_and_authenticate_userlogin($user,$password);
 				}
 			}
 		}
 	}
 	
-	function mo2f_verify_user_mobile_registration($user_id){
-		if(get_user_meta($user_id,'mo_2factor_mobile_registration_status',true) == 'MO_2_FACTOR_SUCCESS'){
+	function mo2f_verify_user_mobile_registration($user,$password){
+		if(get_user_meta($user->ID,'mo_2factor_mobile_registration_status',true) == 'MO_2_FACTOR_SUCCESS'){
 			unset($_SESSION[ 'mo_2factor_login_status' ]);
 		}else{
-			remove_filter('authenticate', array($this, 'mo2fa_default_login'), 20, 3);
-			add_filter('authenticate', 'wp_authenticate_username_password', 20, 3);
+			$this->mo2f_verify_and_authenticate_userlogin($user,$password);
 		}
 	}
+	
+	function mo2f_verify_and_authenticate_userlogin($user,$password){
+		if(wp_check_password( $password, $user->user_pass, $user->ID )){
+			if( email_exists( $user->user_email ) ) { // user is a member
+				$user = get_user_by('email', $user->user_email );
+				$user_id = $user->ID;
+				wp_set_auth_cookie( $user_id, true );
+				$this->remove_current_activity();
+				if ( $_POST['redirect_to'] ) {
+					wp_safe_redirect( $_POST['redirect_to'] );
+				} else {
+					wp_redirect( admin_url() );
+				}
+				exit;
+			}
+		}
+	}
+
+
 	
 	function mo2f_login_verification($user){
 		if(get_user_meta($user->ID,'mo_2factor_mobile_registration_status',true) == 'MO_2_FACTOR_SUCCESS'){ /* Allow only if user's mobile is configured */
@@ -378,7 +394,7 @@ class Miniorange_Mobile_Login{
 					<p><br />
 						<input type="hidden" name="miniorange_login_nonce" value="<?php echo wp_create_nonce('miniorange-2-factor-login-nonce'); ?>" />
 						<input type="submit" name="miniorange_login_submit" id="miniorange_login_submit" class="button button-primary button-large" value="Login" />
-					</p><br /><br />
+					</p><br /><br /></div>
 		<?php
 	}
 	

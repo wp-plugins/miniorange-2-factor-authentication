@@ -3,7 +3,7 @@
 * Plugin Name: miniOrange 2 Factor Authentication
 * Plugin URI: http://miniorange.com
 * Description: This plugin enables login with mobile authentication as an additional layer of security.
-* Version: 1.3
+* Version: 1.4
 * Author: miniOrange
 * Author URI: http://miniorange.com
 * License: GPL2
@@ -32,17 +32,22 @@ class Miniorange_Authentication {
 		add_action( 'admin_enqueue_scripts', array( $this, 'plugin_settings_script' ) );
 		remove_action( 'admin_notices', array( $this, 'mo_auth_success_message') );
 		remove_action( 'admin_notices', array( $this, 'mo_auth_error_message') );
-		$mobile_login = new Miniorange_Mobile_Login();
-        add_action( 'login_form', array( $mobile_login, 'miniorange_login_form_fields' ),100 );
-		add_action( 'login_footer', array( $mobile_login, 'miniorange_login_footer_form' ));
-		add_action( 'init', array( $mobile_login, 'my_login_redirect') );
-		remove_action('login_enqueue_scripts', array( $mobile_login, 'mo_2_factor_hide_login'));
-		add_action( 'login_enqueue_scripts', array( $mobile_login,'mo_2_factor_hide_login') );
-		add_action( 'login_enqueue_scripts', array( $mobile_login,'custom_login_enqueue_scripts') );
-		add_action('wp_logout', array( $this, 'mo_2_factor_endesession'));
-		remove_filter('authenticate', 'wp_authenticate_username_password', 20, 3);
-		add_filter('authenticate', array($mobile_login, 'mo2fa_default_login'), 20, 3);
-		add_filter('login_redirect', array($this,'mo2f_login_redirectto'), 10, 3);
+		add_action('wp_logout', array( $this, 'mo_2_factor_endsession'));
+		if(get_option( 'mo_2factor_admin_registration_status') == 'MO_2_FACTOR_CUSTOMER_REGISTERED_SUCCESS' 
+				&& get_user_meta(get_option( 'mo2f_miniorange_admin'),'mo_2factor_mobile_registration_status',true) == 'MO_2_FACTOR_SUCCESS' 
+				&& (!get_option('mo2f_admin_disabled_status') || get_option('mo2f_disabled_status'))){
+
+			$mobile_login = new Miniorange_Mobile_Login();
+			add_action( 'login_form', array( $mobile_login, 'miniorange_login_form_fields' ),10 );
+			add_action( 'login_footer', array( $mobile_login, 'miniorange_login_footer_form' ));
+			add_action( 'init', array( $mobile_login, 'my_login_redirect') );
+			remove_action('login_enqueue_scripts', array( $mobile_login, 'mo_2_factor_hide_login'));
+			add_action( 'login_enqueue_scripts', array( $mobile_login,'mo_2_factor_hide_login') );
+			add_action( 'login_enqueue_scripts', array( $mobile_login,'custom_login_enqueue_scripts') );
+			add_filter('wp_authenticate_user', array($mobile_login, 'mo2fa_default_login'), 10, 3);
+			add_filter('login_redirect', array($this,'mo2f_login_redirectto'), 10, 3);
+			
+		}
 	}
 	
 	function mo2f_login_redirectto($redirect_to, $request, $user)
@@ -59,8 +64,7 @@ class Miniorange_Authentication {
 		}
 	} 
 	
-	function mo_2_factor_endesession() {
-		delete_option('mo_2factor_login_status');
+	function mo_2_factor_endsession() {
 		session_destroy();
 	}
 	
