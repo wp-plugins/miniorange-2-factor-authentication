@@ -64,17 +64,7 @@
 	color:#00A0D2;
 }
 .alert-box{
-	-moz-appearance: textfield;
-	-webkit-appearance: textfield;
-	margin: 50px 130px -15px 130px;
-	padding: 8px;
-	border: 2px solid;
-	border-radius: 9px;
-	font-size: 20px;
-	background-color: rgb(39, 161, 86);
-	color: white;
-	font-family: -webkit-body;
-	text-align: center;
+    margin-top: 21px;
 }
 .extra-large{
 	padding: 10px !important;
@@ -82,5 +72,4 @@
 	height: 46px !important;
 	border-radius: 9px !important;
 	line-height:25px!important;
-	font-family: -webkit-body;
 }

@@ -31,7 +31,7 @@ class Miniorange_Mobile_Login{
 			session_start();
 		}
 	
-		if (isset($_POST['miniorange_login_submit']) && isset($_POST['miniorange_login_nonce'])){			
+		if (isset($_POST['miniorange_login_nonce'])){			
 			$nonce = $_POST['miniorange_login_nonce'];
 			if ( ! wp_verify_nonce( $nonce, 'miniorange-2-factor-login-nonce' ) ) {
 				update_option('mo2f-login-message','Invalid request');
@@ -114,8 +114,8 @@ class Miniorange_Mobile_Login{
 			}
 		}
 		
-		if(isset($_GET['miniorange_forgotphone'])){ /*Click on the link of forgotphone */
-			$nonce = $_GET['miniorange_forgotphone'];
+		if(isset($_POST['miniorange_forgotphone'])){ /*Click on the link of forgotphone */
+			$nonce = $_POST['miniorange_forgotphone'];
 			if ( ! wp_verify_nonce( $nonce, 'miniorange-2-factor-forgotphone' ) ) {
 				update_option('mo2f-login-message','Invalid request.');
 				$this->mo_auth_show_error_message();
@@ -126,7 +126,7 @@ class Miniorange_Mobile_Login{
 				$id = $_SESSION[ 'mo2f_current_user' ]->ID;
 				$content = json_decode($customer->send_otp_token(get_user_meta($id,'mo_2factor_map_id_with_email',true),'EMAIL',get_option('mo2f_customerKey'),get_option('mo2f_api_key')), true);
 				if(strcasecmp($content['status'], 'SUCCESS') == 0) {
-					update_option('mo2f-login-message', 'An OTP has been sent to ' . ( get_user_meta($id,'mo_2factor_map_id_with_email',true) ) . '. Please enter the OTP to validate.');
+					update_option('mo2f-login-message', 'A one time passcode has been sent to <b>' . ( get_user_meta($id,'mo_2factor_map_id_with_email',true) ) . '</b>. Please enter the OTP to verify your email.');
 					$_SESSION[ 'mo2f-login-transactionId' ] = $content['txId'];
 					$_SESSION[ 'mo_2factor_login_status' ] = 'MO_2_FACTOR_CHALLENGE_OTP_OVER_EMAIL';
 					$this->mo_auth_show_success_message();
@@ -138,20 +138,20 @@ class Miniorange_Mobile_Login{
 			}
 		}
 		
-		if(isset($_GET['miniorange_softtoken'])){ /*Click on the link of phone is offline */
-			$nonce = $_GET['miniorange_softtoken'];
+		if(isset($_POST['miniorange_softtoken'])){ /*Click on the link of phone is offline */
+			$nonce = $_POST['miniorange_softtoken'];
 			if ( ! wp_verify_nonce( $nonce, 'miniorange-2-factor-softtoken' ) ) {
 				update_option('mo2f-login-message','Invalid request.');
 				$this->mo_auth_show_error_message();
 			} else{
 				unset($_SESSION[ 'mo2f-login-qrCode' ]);
 				unset($_SESSION[ 'mo2f-login-transactionId' ]);
-				update_option('mo2f-login-message', 'Enter OTP shown in miniOrange mobile app.');
+				update_option('mo2f-login-message', 'Please enter the one time passcode shown in the miniOrange authenticator app.');
 				$this->mo_auth_show_success_message();
 				$_SESSION[ 'mo_2factor_login_status' ] = 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN';
 			}
 		}
-		if (isset($_POST['miniorange_soft_token_submit']) and isset($_POST['miniorange_soft_token_nonce'])){ /*Validate Soft Token */
+		if (isset($_POST['miniorange_soft_token_nonce'])){ /*Validate Soft Token */
 			$nonce = $_POST['miniorange_soft_token_nonce'];
 			if ( ! wp_verify_nonce( $nonce, 'miniorange-2-factor-soft-token-nonce' ) ) {
 				update_option('mo2f-login-message','Invalid request.');
@@ -184,7 +184,8 @@ class Miniorange_Mobile_Login{
 							remove_filter('authenticate', 'wp_authenticate_username_password', 10, 3);
 							add_filter('authenticate', array($this, 'mo2fa_login'), 10, 3);
 						}else{
-							update_option( 'mo2f-login-message','Invalid OTP. Please try again.');
+							$message = $_SESSION[ 'mo_2factor_login_status' ] == 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' ? 'Invalid OTP. Please try again by clicking on the Settings icon in the app and press Sync button.' : 'Invalid OTP. Please try again';
+							update_option( 'mo2f-login-message',$message);
 							$_SESSION[ 'mo_2factor_login_status' ] == 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' ? $_SESSION[ 'mo_2factor_login_status' ] = 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' : $_SESSION[ 'mo_2factor_login_status' ] = 'MO_2_FACTOR_CHALLENGE_OTP_OVER_EMAIL';
 							$this->mo_auth_show_error_message();
 						}
@@ -216,11 +217,12 @@ class Miniorange_Mobile_Login{
 			wp_set_current_user($user_id, $currentuser->user_login);
 			wp_set_auth_cookie( $user_id, true );
 			$this->remove_current_activity();
-			if ( $redirect_to ) {
-				wp_safe_redirect( $redirect_to );
+			if ( $_POST['redirect_to'] ) {
+				wp_safe_redirect( $_POST['redirect_to'] );
 			} else {
 				wp_redirect( admin_url() );
 			}
+			exit;
 		}else{
 			$this->remove_current_activity();
 		}
@@ -313,7 +315,7 @@ class Miniorange_Mobile_Login{
 	
 	function mo_auth_success_message() {
 		$message = get_option('mo2f-login-message');
-		return "<div> <p class='message'>" . $message . "</p></div>";
+		return "<div> <p class='mo2fa_display_message'>" . $message . "</p></div>";
 	}
 
 	function mo_auth_error_message() {
@@ -361,12 +363,27 @@ class Miniorange_Mobile_Login{
 	function miniorange_login_footer_form(){
 		
 		?>
+			<form name="f" id="mo2f_show_softtoken_loginform" method="post" action="" hidden>
+				<input type="hidden" name="miniorange_softtoken" value="<?php echo wp_create_nonce('miniorange-2-factor-softtoken'); ?>" />
+			</form>
+			<form name="f" id="mo2f_show_forgotphone_loginform" method="post" action="" hidden>
+				<input type="hidden" name="miniorange_forgotphone" value="<?php echo wp_create_nonce('miniorange-2-factor-forgotphone'); ?>" />
+			</form>
 			<form name="f" id="mo2f_backto_mo_loginform" method="post" action="<?php echo wp_login_url(); ?>" hidden>
 				<input type="hidden" name="miniorange_mobile_validation_failed_nonce" value="<?php echo wp_create_nonce('miniorange-2-factor-mobile-validation-failed-nonce'); ?>" />
 			</form>
 			<form name="f" id="mo2f_mobile_validation_form" method="post" action="" hidden>
 				<input type="hidden" name="miniorange_mobile_validation_nonce" value="<?php echo wp_create_nonce('miniorange-2-factor-mobile-validation-nonce'); ?>" />
 			</form>
+			<form name="f" id="mo2f_show_qrcode_loginform" method="post" action="" hidden>
+				<input type="text" name="mo2fa_username" id="mo2fa_username" hidden/>
+				<input type="hidden" name="miniorange_login_nonce" value="<?php echo wp_create_nonce('miniorange-2-factor-login-nonce'); ?>" />
+			</form>
+			<form name="f" id="mo2f_submitotp_loginform" method="post" action="" hidden>
+				<input type="text" name="mo2fa_softtoken" id="mo2fa_softtoken" hidden/>
+				<input type="hidden" name="miniorange_soft_token_nonce" value="<?php echo wp_create_nonce('miniorange-2-factor-soft-token-nonce'); ?>" />
+			</form>
+
 		<?php
 	}
 	
@@ -384,56 +401,98 @@ class Miniorange_Mobile_Login{
 	
 	function mo_2_factor_show_login_page(){
 		?>
-			<div id="mo_2_factor_login_page">
-			
-			
-				<a href="http://miniorange.com/strong_auth" target="_blank"><img src="<?php echo plugins_url( 'includes/images/miniorange_logo.png' , __FILE__ );?>" style="width:100px;"/></a><br /><br />
+			<div id="mo_2_factor_login_page" style="margin-bottom:12%;">
+				<div class="mo2f_header">Sign In</div>
+				<br /><br />
 				<label style="color:#777;font-size:14px;">Username</label>
-				<input type="text" name="mo2fa_username" required="true" autofocus="true" /><br />
+				<input type="text" name="mo2fa_usernamekey" id="mo2fa_usernamekey" required="true" autofocus="true" /><br />
+
 					
 					<p><br />
-						<input type="hidden" name="miniorange_login_nonce" value="<?php echo wp_create_nonce('miniorange-2-factor-login-nonce'); ?>" />
-						<input type="submit" name="miniorange_login_submit" id="miniorange_login_submit" class="button button-primary button-large" value="Login" />
-					</p><br /><br /></div>
+						
+						<input type="button" name="miniorange_login_submit"  onclick="mouserloginsubmit();" id="miniorange_login_submit" class="button button-primary button-large" value="Login" />
+					</p><br /><br />
+					</div>
+					<div class="mo2f_powered_by_div">Powered by <a target="_blank" href="http://miniorange.com/2-factor-authentication"><div class="mo2f_powered_by_miniorange"></div></a></div>
+					<script>
+						function mouserloginsubmit(){
+							var username = jQuery('#mo2fa_usernamekey').val();
+							document.getElementById("mo2f_show_qrcode_loginform").elements[0].value = username;
+							jQuery('#mo2f_show_qrcode_loginform').submit();
+							
+						 }
+						 
+						 jQuery('#mo2fa_usernamekey').keypress(function(e){
+							  if(e.which == 13){//Enter key pressed
+								e.preventDefault();
+								var username = jQuery('#mo2fa_usernamekey').val();
+								document.getElementById("mo2f_show_qrcode_loginform").elements[0].value = username;
+								jQuery('#mo2f_show_qrcode_loginform').submit();
+							  }
+							 
+						});
+					</script>
+
 		<?php
 	}
 	
 	public function mo_2_factor_show_soft_token(){
 	?>
-		<div id="mo_2_factor_soft_token_page">
-			<a href="http://miniorange.com/strong_auth" target="_blank"><img src="<?php echo plugins_url( 'includes/images/miniorange_logo.png' , __FILE__ );?>" style="width:100px;"/></a><br />
-				<br /><label style="color:#777;font-size:14px;">Validate OTP</label>
-				<div id="displaySoftToken"><center><input type="text" name="mo2fa_softtoken" required="true" autofocus="true" /></center></div>
+		<div id="mo_2_factor_soft_token_page" style="width:101%;margin-bottom:12%;">
+			<br /><br />
+				<div id="displaySoftToken"><center><input type="text" name="mo2fa_softtokenkey" placeholder="Enter OTP" id="mo2fa_softtokenkey" required="true" autofocus="true" /></center></div>
 					
 					<p>
-						<input type="hidden" name="miniorange_soft_token_nonce" value="<?php echo wp_create_nonce('miniorange-2-factor-soft-token-nonce'); ?>" />
-						<input type="submit" name="miniorange_soft_token_submit" id="miniorange_soft_token_submit" style="float:left;" class="button button-primary button-large" value="Validate" />
-						<input type="button" name="miniorange_login_back" onclick="mologinback();" id="miniorange_login_back" class="button button-primary button-large" value="Back To Login" style="float:right;background: #24890d;color: #ffffff;border: 1px solid #24890d;cursor: hand;" />
-					</p><br />
+						
+						<input type="button" name="miniorange_soft_token_submit" onclick="mootploginsubmit();" id="miniorange_soft_token_submit" class="button button-primary button-large" value="Validate" />
+						<input type="button" name="miniorange_login_back" onclick="mologinback();" id="miniorange_login_back" class="button button-primary button-large button-green" value="Back To Login" style="float:left;" />
+					</p><br /><br />
 		</div>
+		<div class="mo2f_powered_by_div">Powered by <a target="_blank" href="http://miniorange.com/2-factor-authentication"><div class="mo2f_powered_by_miniorange"></div></a></div>
 		<script>
 			function mologinback(){
 				jQuery('#mo2f_backto_mo_loginform').submit();
 			 }
+			  function mootploginsubmit(){
+				var otpkey = jQuery('#mo2fa_softtokenkey').val();
+				document.getElementById("mo2f_submitotp_loginform").elements[0].value = otpkey;
+				jQuery('#mo2f_submitotp_loginform').submit();
+				
+			 }
+			 
+			 jQuery('#mo2fa_softtokenkey').keypress(function(e){
+				  if(e.which == 13){//Enter key pressed
+					e.preventDefault();
+					var otpkey = jQuery('#mo2fa_softtokenkey').val();
+					document.getElementById("mo2f_submitotp_loginform").elements[0].value = otpkey;
+					jQuery('#mo2f_submitotp_loginform').submit();
+				  }
+				 
+			});
+
 		</script>
 	<?php
 	}
 	
 	public function mo_2_factor_show_qr_code(){
 		?>
-		<div id="mo_2_factor_qr_code_page">
-			
-			
-				<a href="http://miniorange.com/strong_auth" target="_blank"><img src="<?php echo plugins_url( 'includes/images/miniorange_logo.png' , __FILE__ );?>" style="width:100px;"/></a><br />
-				<h3><center>Mobile Authentication</center></h3><br />
-				<div id="showQrCode"><center> <?php echo '<img src="data:image/jpg;base64,' . $_SESSION[ 'mo2f-login-qrCode' ] . '" />'; ?></center></div>
+		<div id="mo_2_factor_qr_code_page" style="width:101%;margin-bottom:12%;">
+			<div style="margin-bottom:18%;"><center><h3>Identify yourself by scanning the QR code with miniOrange Authenticator.</h3></center></div>
+				
+			<div id="showQrCode" style="margin-bottom:18%;"><center> <?php echo '<img src="data:image/jpg;base64,' . $_SESSION[ 'mo2f-login-qrCode' ] . '" />'; ?></center>
+			</div>
 					
-					<p>
-						<center><a href="<?php echo wp_login_url() . '/?miniorange_softtoken=' . wp_create_nonce('miniorange-2-factor-softtoken') ?>">Click here if your phone is offline</a></center>
-						<?php if(get_option('mo2f_enable_forgotphone')){ ?><center><a href="<?php echo wp_login_url() . '/?miniorange_forgotphone=' . wp_create_nonce('miniorange-2-factor-forgotphone') ?>" > Click here if you forgot your phone</a></center><br /><?php } ?>
-						<br /><center><input type="button" name="miniorange_login_back" onclick="mologinback();" id="miniorange_login_back" class="button button-primary button-large" value="Back To Login" style="float:right;background: #24890d;color: #ffffff;border: 1px solid #24890d;cursor: hand;" /></center>
-					</p><br />
-			</div> 
+			<p>
+				<?php if(!get_option('mo2f_enable_forgotphone')){ ?>
+				<div><input type="button" name="miniorange_login_forgotphone" onclick="mologinforgotphone();" id="miniorange_login_forgotphone" class="button button-primary button-large" value="Forgot Phone?" /></div>
+				<?php } ?>
+				
+				<div style="margin-right:53%;"><input type="button" name="miniorange_login_offline" onclick="mologinoffline();" id="miniorange_login_offline" class="button button-primary button-large" value="Phone is Offline?" /></div>
+				
+				<div><br /><br /><br /><input type="button" name="miniorange_login_back" onclick="mologinback();" id="miniorange_login_back" class="button button-primary button-large button-green" value="Back To Login" style="float:left;" /></div>
+			</p><br /><br />
+		</div>
+		<div class="mo2f_powered_by_div">Powered by <a target="_blank" href="http://miniorange.com/2-factor-authentication"><div class="mo2f_powered_by_miniorange"></div></a></div>
 			 
 			 <script>
 			var timeout;
@@ -470,6 +529,12 @@ class Miniorange_Mobile_Login{
 			
 			function mologinback(){
 				jQuery('#mo2f_backto_mo_loginform').submit();
+			 }
+			 function mologinoffline(){
+				jQuery('#mo2f_show_softtoken_loginform').submit();
+			 }
+			 function mologinforgotphone(){
+				jQuery('#mo2f_show_forgotphone_loginform').submit();
 			 }
 			 </script>
 			 

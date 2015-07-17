@@ -25,6 +25,13 @@ body.login div#login form#loginform input#user_pass {
 body.login div#login div#login_error{
 	display: none;
 }
+body.login p.message{
+	display: none;
+}
+body.login div#login #loginform{
+	box-shadow:inherit;
+}
+
 body.login div#login div#login_error1{
 	border-left: 4px solid #dd3d36;
 	margin-left: 0;
@@ -32,4 +39,38 @@ body.login div#login div#login_error1{
 	background: #fff;
 	-webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
 	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
+}
+.mo2f_header{
+	font-size: 28px;
+	font-family: -webkit-body;
+	color: #777;
+}
+.mo2f_powered_by_miniorange{
+	width: 68px;
+	height: 24px;
+	background-image: url('../images/miniorange_logo.png');
+	-webkit-background-size: 68px 24px;
+	background-size: 68px 24px;
+	background-repeat: no-repeat;
+	display: inline-block;
+	vertical-align: middle;
+}
+.mo2f_powered_by_div{
+	padding-top: 4px;
+	margin-bottom: -17%;
+	text-align: right;
+	font-size: 9px;
+}
+.button-green{
+	background: #95D387 !important;
+	color: #ffffff !important;
+	border: 1px solid #95D387 !important;
+}
+.mo2fa_display_message{
+	margin-left: 0;
+	padding: 12px;
+	border-left: 4px solid #00a0d2;
+	background-color: #fff;
+	-webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+	box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
 }

@@ -29,9 +29,11 @@
 			<li><b>Step 1:</b> Enter your username.</li>
 			<li><b>Step 2:</b> Click on <i>Login with miniOrange</i>.</li>
 			<li><b>Step 3:</b> Scan QR code from your miniOrange mobile app. This requires internet connection.</li>
-			<li><b>Step 4:</b> If your mobile is offline, click on <i>Click here if your phone is offline</i>.</li>
-			<li><b>Step 5:</b> In your miniOrange mobile app, click on Soft Token and enter the OTP.</li>
-			<li><b>Step 6:</b> Click on <i>Validate.</i></li>
+			<li><b>Step 4:</b> If your mobile is offline, click on <i>Phone is Offline?</i>.</li>
+			<li><b>Step 5:</b> You have to enter OTP from you app displayed under Soft Token tab.</li>
+			<li><b>Step 6:</b> If you forgot or lost your phone, click on <i>Forgot Phone?</i>.</li>
+			<li><b>Step 7:</b> You have to enter the OTP that is sent to your regsitered email.</li>
+			<li><b>Step 8:</b> Click on <i>Validate.</i></li>
 		</ul>
 		Once you are authenticated, you will be logged in.	<br /><br />	
 		<table>

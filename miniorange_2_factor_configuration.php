@@ -176,11 +176,11 @@
 			</form>
 			<form name="f" id="mowp_activationform" method="post" action="">
 				<input type="checkbox" id="mo2f_role_activation" name="mo2f_role_activation" value="1" <?php echo get_option('mo2f_disabled_status') ? 'checked="checked"' : ''; ?> />Enable plugin for all other users.<br /><br />
-				<div id="mo2f_note"><b>Note:</b> Admins are required to test 2 factor plugin and if they are successfully logged in then enable the plugin for other roles.</div>
+				<div id="mo2f_note"><b>Note:</b> It is recommended that you logout and test the login before you enable it for your users.</div>
 				<input type="hidden" name="option" value="mo_auth_user_activation" />
 			</form><br />
 			<form name="f" id="mowp_forgotphone_form" method="post" action="">
-				<input type="checkbox" id="mo2f_forgotphone" name="mo2f_forgotphone" value="1" <?php echo get_option('mo2f_enable_forgotphone') ? 'checked="checked"' : ''; ?> />Enable Forgot Phone.<br /><br /><div id="mo2f_note"><b>Note:</b> Checking this option will enable Forgot My Phone for all the users during Login. An OTP over registered email will be send to verify the user. User has to enter OTP to bypass mobile authentication.</div>
+				<input type="checkbox" id="mo2f_forgotphone" name="mo2f_forgotphone" value="1" <?php echo !get_option('mo2f_enable_forgotphone') ? 'checked="checked"' : ''; ?> />Enable Forgot Phone.<br /><br /><div id="mo2f_note"><b>Note:</b> Checking this option will enable Forgot My Phone for all the users during Login. An OTP over registered email will be send to verify the user. User has to enter OTP to bypass mobile authentication.</div>
 				<input type="hidden" name="option" value="mo2f_forgotphone_activation" />
 			</form>
 		</div>
@@ -232,15 +232,15 @@
 	?>
 		<form name="f" method="post" action="">
 			<div class="mo2f_table_layout">
-				<div id="toggle1" class="panel_toggle"><center><h3><b>miniOrange 2 Factor Authentication has been enabled for you. Please set up your account and register yourself by following the steps.</b></h3></center></div>
+				<div id="toggle1" class="panel_toggle"><center><p style="font-size:17px;">miniOrange 2 Factor Authentication has been enabled for you. Please set up your account and register yourself by following the steps.</p></center></div>
 				<div id="panel1">
 					<table class="mo2f_settings_table">
 						
 						<tr>
-							<td><center><div class="alert-box"><input class="mo2f_table_textbox" type="email" autofocus="true" name="mo_useremail" style="text-align:center;height:40px;font-size:24px;" required placeholder="person@example.com" value="<?php echo $current_user->user_email;?>"/></div></center></td>
+							<td><center><div class="alert-box"><input type="email" autofocus="true" name="mo_useremail" style="width: 70%;border: 2px solid #F7934D;text-align: center;height: 40px;font-size: 24px;border-radius:5px;" required placeholder="person@example.com" value="<?php echo $current_user->user_email;?>"/></div></center></td>
 						</tr>
 						<tr>
-							<td><center><h4>Please enter a valid email id that you have access to. You will be able to login after verifying an OTP that we will send to this email in case you forgot or lost your phone.</h4></center></td>
+							<td><center><p>Please enter a valid email id that you have access to. You will be able to login after verifying an OTP that we will send to this email in case you forgot or lost your phone.</p></center></td>
 						</tr>
 						<tr><td></td></tr>
 						<tr><td></td></tr>

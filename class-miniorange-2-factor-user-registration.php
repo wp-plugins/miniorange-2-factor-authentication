@@ -74,15 +74,15 @@ class Miniorange_User_Register{
 	?>
 		<form name="f" method="post" action="">
 			<div class="mo2f_table_layout">
-				<div id="toggle1" class="panel_toggle"><center><h3><b>miniOrange 2 Factor Authentication has been enabled for you. Please set up your account and register yourself by following the steps.</b></h3></center></div>
+				<div id="toggle1" class="panel_toggle"><center><p style="font-size:17px;">miniOrange 2 Factor Authentication has been enabled for you. Please set up your account and register yourself by following the steps.</p></center></div>
 				<div id="panel1">
 					<table class="mo2f_settings_table">
 						
 						<tr>
-							<td><center><div class="alert-box"><input class="mo2f_table_textbox" type="email" autofocus="true" name="mo_useremail" style="text-align:center;height:40px;font-size:24px;" required placeholder="person@example.com" value="<?php echo $current_user->user_email;?>"/></div></center></td>
+							<td><center><div class="alert-box"><input type="email" autofocus="true" name="mo_useremail" style="width: 70%;border: 2px solid #F7934D;text-align: center;height: 40px;font-size: 24px;border-radius:5px;" required placeholder="person@example.com" value="<?php echo $current_user->user_email;?>"/></div></center></td>
 						</tr>
 						<tr>
-							<td><center><h4>Please enter a valid email id that you have access to. You will be able to login after verifying an OTP that we will send to this email in case you forgot or lost your phone.</h4></center></td>
+							<td><center><p>Please enter a valid email id that you have access to. You will be able to login after verifying an OTP that we will send to this email in case you forgot or lost your phone.</p></center></td>
 						</tr>
 						<tr><td></td></tr>
 						<tr><td></td></tr>

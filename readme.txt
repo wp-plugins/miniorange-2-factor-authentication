@@ -3,7 +3,7 @@ Contributors: miniOrange
 Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, multi factor authentication, Google authenticator, login, authy, Clef, 2 Factor, yubico, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange
 Requires at least: 3.0.1
 Tested up to: 4.2.2
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -111,6 +111,9 @@ To know more about authentication methods, please visit http://miniorange.com/st
 
 == Changelog ==
 
+= 1.5 =
+* Bug Fixes: Login issues and password save issues resolved
+
 = 1.4 =
 * Bug Fixes: Authentication was not working on some version of php. 
 
@@ -127,6 +130,9 @@ To know more about authentication methods, please visit http://miniorange.com/st
 * First version supported with mobile auhthentication for admin only.
 
 == Upgrade Notice ==
+
+= 1.5 =
+* Bug Fixes: Login issues and password save issues resolved
 
 = 1.4 =
 * Bug Fixes: Authentication was not working on some version of php.
