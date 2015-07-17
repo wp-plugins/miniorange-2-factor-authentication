@@ -3,7 +3,7 @@ Contributors: miniOrange
 Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, multi factor authentication, Google authenticator, login, authy, Clef, 2 Factor, yubico, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange
 Requires at least: 3.0.1
 Tested up to: 4.2.2
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -73,7 +73,7 @@ Please email us at info@miniorange.com
 Use one time passcode login by clicking on 'click here if your phone is offline'
 
 = When I enter OTP from app after clicking on `click here if your phone is offline`, it says `Invalid OTP` =
-Click on the Home icon in the app and then press <b>Sync</b> button under 'Time correction for codes:'.
+Click on the Settings icon in the app and then press <b>Sync</b> button under 'Time correction for codes:'.
 
 = For any other query/problem/request =
 Please email us at info@miniorange.com or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>
@@ -111,6 +111,9 @@ To know more about authentication methods, please visit http://miniorange.com/st
 
 == Changelog ==
 
+= 1.4 =
+* Bug Fixes: Authentication was not working on some version of php. 
+
 = 1.3 =
 * Bug Fixes 
 
@@ -124,6 +127,9 @@ To know more about authentication methods, please visit http://miniorange.com/st
 * First version supported with mobile auhthentication for admin only.
 
 == Upgrade Notice ==
+
+= 1.4 =
+* Bug Fixes: Authentication was not working on some version of php.
 
 = 1.3 =
 * Bug Fixes
