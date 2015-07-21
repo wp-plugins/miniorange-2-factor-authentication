@@ -345,7 +345,7 @@ class Miniorange_Mobile_Login{
 		}
 		
 		$login_status = isset($_SESSION[ 'mo_2factor_login_status' ]) ? $_SESSION[ 'mo_2factor_login_status' ] : null;
-		if($login_status == 'MO_2_FACTOR_CHALLENGE_MOBILE_AUTHENTICATION'){
+		if($login_status == 'MO_2_FACTOR_CHALLENGE_MOBILE_AUTHENTICATION' && isset($_POST['miniorange_login_nonce']) && wp_verify_nonce( $_POST['miniorange_login_nonce'], 'miniorange-2-factor-login-nonce' )){			
 			$this->mo_2_factor_show_qr_code();
 		}else if($login_status == 'MO_2_FACTOR_SHOW_USERPASS_LOGIN_FORM'){
 			$this->mo_2_factor_show_login();
@@ -353,11 +353,34 @@ class Miniorange_Mobile_Login{
 			?><script>
 				jQuery('#user_login').val(<?php echo "'" . $_SESSION[ 'mo2f_current_user' ]->user_login . "'"; ?>);
 			</script><?php
-		}else if($login_status == 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' || $login_status == 'MO_2_FACTOR_CHALLENGE_OTP_OVER_EMAIL'){
+		}else if($this->miniorange_check_status($login_status)){
 			$this->mo_2_factor_show_soft_token();
 		}else{
 			$this->mo_2_factor_show_login_page();
 		}
+	}
+	
+	function miniorange_check_status($login_status){
+		if($login_status == 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' || $login_status == 'MO_2_FACTOR_CHALLENGE_OTP_OVER_EMAIL'){
+			$nonce = '';
+			if(isset($_POST['miniorange_softtoken'])){
+				$nonce = $_POST['miniorange_softtoken'];
+				if(wp_verify_nonce($nonce,'miniorange-2-factor-softtoken')){
+					return true;
+				}		
+			}else if(isset($_POST['miniorange_forgotphone'])){
+				$nonce = $_POST['miniorange_forgotphone'];
+				if(wp_verify_nonce($nonce,'miniorange-2-factor-forgotphone')){
+					return true;
+				}
+			}else if(isset($_POST['miniorange_soft_token_nonce'])){
+				$nonce = $_POST['miniorange_soft_token_nonce'];
+				if(wp_verify_nonce($nonce,'miniorange-2-factor-soft-token-nonce')){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	function miniorange_login_footer_form(){

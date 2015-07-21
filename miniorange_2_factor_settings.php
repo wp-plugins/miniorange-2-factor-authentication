@@ -3,7 +3,7 @@
 * Plugin Name: miniOrange 2 Factor Authentication
 * Plugin URI: http://miniorange.com
 * Description: This plugin enables login with mobile authentication as an additional layer of security.
-* Version: 1.5
+* Version: 1.6
 * Author: miniOrange
 * Author URI: http://miniorange.com
 * License: GPL2
@@ -28,7 +28,6 @@ class Miniorange_Authentication {
 		add_action( 'admin_menu', array( $this, 'miniorange_auth_menu' ) );
 		add_action( 'admin_init',  array( $this, 'miniorange_auth_save_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'plugin_settings_style' ) );
-		register_deactivation_hook(__FILE__, array( $this, 'mo_auth_deactivate'));
 		add_action( 'admin_enqueue_scripts', array( $this, 'plugin_settings_script' ) );
 		remove_action( 'admin_notices', array( $this, 'mo_auth_success_message') );
 		remove_action( 'admin_notices', array( $this, 'mo_auth_error_message') );
@@ -80,52 +79,6 @@ class Miniorange_Authentication {
 		$class = "updated";
 		$message = get_option('mo2f_message');
 		echo "<div class='" . $class . "'> <p>" . $message . "</p></div>";
-	}
-
-	public function mo_auth_deactivate() {
-		//delete all stored key-value pairs which are available to all users
-		delete_option('mo2f_email');
-		delete_option('mo2f_host_name');
-		delete_option('mo2f_phone');
-		delete_option('mo2f_customerKey');
-		delete_option('mo2f_api_key');
-		delete_option('mo2f_customer_token');
-		delete_option('mo2f_message');
-		delete_option('mo_2factor_admin_registration_status');
-		delete_option('mo2f-login-message');
-		delete_option('mo_2f_login_type_enabled');
-		delete_option('mo2f_admin_disabled_status');
-		delete_option('mo2f_disabled_status');
-		delete_option('mo2f_miniorange_admin');
-		delete_option('mo2f_enable_forgotphone');
-		
-		//delete all stored key-value pairs for the roles
-		global $wp_roles;
-		if (!isset($wp_roles))
-			$wp_roles = new WP_Roles();
-		foreach($wp_roles->role_names as $id => $name) {	
-			delete_option('mo2fa_'.$id);	
-		}
-		
-		//delete user specific key-value pair
-		$users = get_users( array() );
-		foreach ( $users as $user ) {
-			delete_user_meta($user->ID,'mo_2factor_user_registration_status');
-			delete_user_meta($user->ID,'mo_2factor_mobile_registration_status');
-			delete_user_meta($user->ID,'mo_2factor_user_registration_with_miniorange');
-			delete_user_meta($user->ID,'mo_2factor_map_id_with_email');
-		}
-		
-		//delete previous version key-value pairs
-		delete_option('mo_2factor_admin_mobile_registration_status');
-		delete_option('mo_2factor_registration_status');
-		delete_option('mo_2factor_temp_status');
-		delete_option('mo2f_login_username');
-		delete_option('mo2f-login-qrCode');
-		delete_option('mo2f-login-transactionId');
-		delete_option('mo_2factor_login_status');
-		delete_option('mo2f_mowplink');
-		
 	}
 
 	function miniorange_auth_menu() {
