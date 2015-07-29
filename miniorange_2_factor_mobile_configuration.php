@@ -105,7 +105,7 @@
 					<div id="mobile_registered" >
 					<form name="f" method="post" action="">
 						<input type="hidden" name="option" value="mo_auth_setting_configuration" />
-						<input type="submit" name="submit" id="mo2f_config" value="Configure Your Settings" class="button button-primary button-large" />
+						<input type="submit" name="submit" id="mo2f_config" value="Go To Settings" class="button button-primary button-large" />
 					</form>
 					<form name="f" method="post" id="mobile_register_form" action="">
 						<input type="hidden" name="option" value="mo_auth_mobile_registration_complete" />

@@ -1,3 +1,6 @@
+body.login  div#login{
+	display:none;
+}
 body.login div#login form#loginform input#user_login {
 	display:none;
 }
@@ -56,15 +59,20 @@ body.login div#login div#login_error1{
 	vertical-align: middle;
 }
 .mo2f_powered_by_div{
-	padding-top: 4px;
-	margin-bottom: -17%;
 	text-align: right;
 	font-size: 9px;
+	padding-right:2%;
 }
 .button-green{
-	background: #95D387 !important;
-	color: #ffffff !important;
-	border: 1px solid #95D387 !important;
+	color: rgb(0,160,210);
+	background:none!important;
+    border:none; 
+    padding:0!important;
+    font: inherit;
+	border-color: transparent !important;
+    /*border is optional*/
+    border-bottom:1px solid #444; 
+    cursor: pointer;
 }
 .mo2fa_display_message{
 	margin-left: 0;
@@ -73,4 +81,55 @@ body.login div#login div#login_error1{
 	background-color: #fff;
 	-webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
 	box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+	width: 30.5%;
+	margin:0% 30% 0% 41%;
+	z-index:99999;
+}
+.mo2fa_messages_container{
+	width:85%;
+}
+.miniorange_mobile_auth {
+	border: 0px none transparent;
+	padding:10% 24px 10px 20px;
+	min-height:360px;
+	background:transparent;
+}
+.miniorange_soft_auth {
+	border: 1px none transparent;
+	padding:10% 24px 10px 20px;
+	min-height:360px;
+	background:transparent;
+	
+}
+.miniorange-inner-login-container{
+	background-color: #fff;
+	margin:0% 30% 0% 35%;
+	width:28%;
+	border-radius:5px;
+	z-index:99999;
+	border: 1px solid rgba(128, 128, 128, 0.06);
+}
+.miniorange-button{
+	height: 30px;
+	display: inline-block;
+	font-size: 14px;
+	line-height: 28px;
+	padding: 0 12px 2px;
+	border-width: 1px;
+	vertical-align: baseline;
+	background: #00a0d2;
+	border-style: solid;
+	border-color: #0073aa;
+	-webkit-appearance: none;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	white-space: nowrap;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-box-shadow: inset 0 1px 0 rgba(120,200,230,.5),0 1px 0 rgba(0,0,0,.15);
+	box-shadow: inset 0 1px 0 rgba(120,200,230,.5),0 1px 0 rgba(0,0,0,.15);
+	color: #fff;
+	text-decoration: none;
+	cursor:pointer;
 }

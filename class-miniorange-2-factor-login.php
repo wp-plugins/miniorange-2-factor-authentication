@@ -54,12 +54,16 @@ class Miniorange_Mobile_Login{
 						if(!get_option('mo2f_admin_disabled_status')){  /*checking if plugin is activated for admins */
 							$this->mo2f_login_verification($user);
 						}else{
+							update_option( 'mo2f-login-message','You can login into your account using password. To use \'Login with your phone\' functionality, you have to enable it.');
+							$this->mo_auth_show_success_message();
 							$this->mo2f_redirectto_wp_login();
 						}
 					}else{
 						if(get_option('mo2f_disabled_status')){ /*checking if plugin is activated for all other roles */
 							$this->mo2f_login_verification($user);
 						}else{
+							update_option( 'mo2f-login-message','You can login into your account using password. Your Administrator has not enabled \'Login with your phone\' functionality for you. Please contact your Administrator.');
+							$this->mo_auth_show_success_message();
 							$this->mo2f_redirectto_wp_login();
 						}
 					}
@@ -147,7 +151,6 @@ class Miniorange_Mobile_Login{
 				unset($_SESSION[ 'mo2f-login-qrCode' ]);
 				unset($_SESSION[ 'mo2f-login-transactionId' ]);
 				update_option('mo2f-login-message', 'Please enter the one time passcode shown in the miniOrange authenticator app.');
-				$this->mo_auth_show_success_message();
 				$_SESSION[ 'mo_2factor_login_status' ] = 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN';
 			}
 		}
@@ -184,7 +187,7 @@ class Miniorange_Mobile_Login{
 							remove_filter('authenticate', 'wp_authenticate_username_password', 10, 3);
 							add_filter('authenticate', array($this, 'mo2fa_login'), 10, 3);
 						}else{
-							$message = $_SESSION[ 'mo_2factor_login_status' ] == 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' ? 'Invalid OTP. Please try again by clicking on the Settings icon in the app and press Sync button.' : 'Invalid OTP. Please try again';
+							$message = $_SESSION[ 'mo_2factor_login_status' ] == 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' ? 'Invalid OTP. <b>Please try again after clicking on the Settings icon in the app and press Sync button.</b>' : 'Invalid OTP. Please try again';
 							update_option( 'mo2f-login-message',$message);
 							$_SESSION[ 'mo_2factor_login_status' ] == 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' ? $_SESSION[ 'mo_2factor_login_status' ] = 'MO_2_FACTOR_CHALLENGE_SOFT_TOKEN' : $_SESSION[ 'mo_2factor_login_status' ] = 'MO_2_FACTOR_CHALLENGE_OTP_OVER_EMAIL';
 							$this->mo_auth_show_error_message();
@@ -229,7 +232,7 @@ class Miniorange_Mobile_Login{
 	}
 	
 	function mo2fa_default_login($user,$password){
-		if(!MO2f_Utility::mo2f_check_empty_or_null($user)){
+		if(!MO2f_Utility::mo2f_check_empty_or_null($user->user_login) && !MO2f_Utility::mo2f_check_empty_or_null($password)){
 			$user_id = $user->ID;
 			if(!strcasecmp(wp_sprintf_l( '%l', $user->roles ),'administrator')){
 				if(!get_option('mo2f_admin_disabled_status')){  /*checking if plugin is activated for admins */
@@ -250,6 +253,16 @@ class Miniorange_Mobile_Login{
 	function mo2f_verify_user_mobile_registration($user,$password){
 		if(get_user_meta($user->ID,'mo_2factor_mobile_registration_status',true) == 'MO_2_FACTOR_SUCCESS'){
 			unset($_SESSION[ 'mo_2factor_login_status' ]);
+			?>
+			<style>
+				div#login_error{
+					display:none !important;
+				}
+			</style>
+			<?php
+			$message = 'Login with password has been disabled for you. Please try login with your phone.';
+			update_option( 'mo2f-login-message',$message);
+			$this->mo_auth_show_error_message();
 		}else{
 			$this->mo2f_verify_and_authenticate_userlogin($user,$password);
 		}
@@ -289,6 +302,8 @@ class Miniorange_Mobile_Login{
 				$this->mo_auth_show_error_message();
 			}
 		}else{ /*if mobile is not configured then redirect the user to default login */
+			update_option( 'mo2f-login-message','Please login using password and configure your mobile.');
+			$this->mo_auth_show_success_message();
 			$this->mo2f_redirectto_wp_login();
 		}
 	}
@@ -315,13 +330,13 @@ class Miniorange_Mobile_Login{
 	
 	function mo_auth_success_message() {
 		$message = get_option('mo2f-login-message');
-		return "<div> <p class='mo2fa_display_message'>" . $message . "</p></div>";
+		return "<div> <p class='message'>" . $message . "</p></div>";
 	}
 
 	function mo_auth_error_message() {
 		$id = "login_error1";
 		$message = get_option('mo2f-login-message');
-		return "<div id='" . $id . "'> <p>" . $message . "</p></div>";
+		return "<div id='" . $id . "'> <p>" . $message . $error. "</p></div>";
 	}
 	
 	private function mo_auth_show_error_message() {
@@ -350,13 +365,11 @@ class Miniorange_Mobile_Login{
 		}else if($login_status == 'MO_2_FACTOR_SHOW_USERPASS_LOGIN_FORM'){
 			$this->mo_2_factor_show_login();
 			$this->mo_2_factor_show_wp_login_form();
-			?><script>
-				jQuery('#user_login').val(<?php echo "'" . $_SESSION[ 'mo2f_current_user' ]->user_login . "'"; ?>);
-			</script><?php
 		}else if($this->miniorange_check_status($login_status)){
 			$this->mo_2_factor_show_soft_token();
 		}else{
-			$this->mo_2_factor_show_login_page();
+			$this->mo_2_factor_show_login();
+			$this->mo_2_factor_show_wp_login_form();
 		}
 	}
 	
@@ -412,67 +425,59 @@ class Miniorange_Mobile_Login{
 	
 	function mo_2_factor_show_wp_login_form(){
 	?>
+		<div class="mo2f-login-container">
+			<div style="position: relative" class="or-container">
+				<div style="border-bottom: 1px solid #EEE; width: 90%; margin: 0 5%; z-index: 1; top: 50%; position: absolute;"></div>
+				<h2 style="color: #666; margin: 0 auto 20px auto; padding: 3px 0; text-align:center; background: white; width: 20%; position:relative; z-index: 2;">or</h2>
+			</div>
+			<div class="mo2f-button-container">
+				<input type="text" name="mo2fa_usernamekey" id="mo2fa_usernamekey" autofocus="true" placeholder="Username"/>
+					<p>
+						<input type="button" name="miniorange_login_submit"  style="width:100%;" onclick="mouserloginsubmit();" id="miniorange_login_submit" class="miniorange-button button-add" value="Login with your phone" />
+					</p><br /><br />
+			</div>
+		</div>
+		
 		<script>
-			var content = '<a href="javascript:void(0)" id="backto_mo" onClick="mo2fa_backtomologin()" style="float:right">← Back To miniOrange Login</a>';
-			jQuery('#login').append(content);
-			function mo2fa_backtomologin(){
-				jQuery('#mo2f_backto_mo_loginform').submit();
-			}
+			function mouserloginsubmit(){
+				var username = jQuery('#mo2fa_usernamekey').val();
+				document.getElementById("mo2f_show_qrcode_loginform").elements[0].value = username;
+				jQuery('#mo2f_show_qrcode_loginform').submit();
+				
+			 }
+			 
+			 jQuery('#mo2fa_usernamekey').keypress(function(e){
+				  if(e.which == 13){//Enter key pressed
+					e.preventDefault();
+					var username = jQuery('#mo2fa_usernamekey').val();
+					document.getElementById("mo2f_show_qrcode_loginform").elements[0].value = username;
+					jQuery('#mo2f_show_qrcode_loginform').submit();
+				  }
+				 
+			});
 		</script>
 	<?php
 	}
 	
-	function mo_2_factor_show_login_page(){
-		?>
-			<div id="mo_2_factor_login_page" style="margin-bottom:12%;">
-				<div class="mo2f_header">Sign In</div>
-				<br /><br />
-				<label style="color:#777;font-size:14px;">Username</label>
-				<input type="text" name="mo2fa_usernamekey" id="mo2fa_usernamekey" required="true" autofocus="true" /><br />
-
-					
-					<p><br />
-						
-						<input type="button" name="miniorange_login_submit"  onclick="mouserloginsubmit();" id="miniorange_login_submit" class="button button-primary button-large" value="Login" />
-					</p><br /><br />
-					</div>
-					<div class="mo2f_powered_by_div">Powered by <a target="_blank" href="http://miniorange.com/2-factor-authentication"><div class="mo2f_powered_by_miniorange"></div></a></div>
-					<script>
-						function mouserloginsubmit(){
-							var username = jQuery('#mo2fa_usernamekey').val();
-							document.getElementById("mo2f_show_qrcode_loginform").elements[0].value = username;
-							jQuery('#mo2f_show_qrcode_loginform').submit();
-							
-						 }
-						 
-						 jQuery('#mo2fa_usernamekey').keypress(function(e){
-							  if(e.which == 13){//Enter key pressed
-								e.preventDefault();
-								var username = jQuery('#mo2fa_usernamekey').val();
-								document.getElementById("mo2f_show_qrcode_loginform").elements[0].value = username;
-								jQuery('#mo2f_show_qrcode_loginform').submit();
-							  }
-							 
-						});
-					</script>
-
-		<?php
-	}
-	
 	public function mo_2_factor_show_soft_token(){
 	?>
-		<div id="mo_2_factor_soft_token_page" style="width:101%;margin-bottom:12%;">
-			<br /><br />
-				<div id="displaySoftToken"><center><input type="text" name="mo2fa_softtokenkey" placeholder="Enter OTP" id="mo2fa_softtokenkey" required="true" autofocus="true" /></center></div>
-					
-					<p>
+		<div class="miniorange_soft_auth">
+			<div class="mo2fa_messages_container"> <p class='mo2fa_display_message'><?php echo get_option('mo2f-login-message'); ?></p></div> 
+			<div id="mo_2_factor_soft_token_page" class="miniorange-inner-login-container" style="margin-top:2% !important;">
+				<br /><br />
+					<div id="displaySoftToken"><center><input type="text" name="mo2fa_softtokenkey" style="width:75%;" placeholder="Enter OTP" id="mo2fa_softtokenkey" required="true" autofocus="true" /></center></div>
+							
+						<span><input type="button" name="miniorange_soft_token_submit" onclick="mootploginsubmit();" id="miniorange_soft_token_submit" class="miniorange-button" style="margin-left:12%;" value="Validate" />
 						
-						<input type="button" name="miniorange_soft_token_submit" onclick="mootploginsubmit();" id="miniorange_soft_token_submit" class="button button-primary button-large" value="Validate" />
-						<input type="button" name="miniorange_login_back" onclick="mologinback();" id="miniorange_login_back" class="button button-primary button-large button-green" value="Back To Login" style="float:left;" />
-					</p><br /><br />
+						<input type="button" name="miniorange_login_back" onclick="mologinback();" style="margin-left:26%;" id="miniorange_login_back" class="button-green" value="←Back To Login"/>
+						
+						</span><br /><br />
+						
+						<div class="mo2f_powered_by_div">Powered by <a target="_blank" href="http://miniorange.com/2-factor-authentication"><div class="mo2f_powered_by_miniorange"></div></a></div>
+			</div>
 		</div>
-		<div class="mo2f_powered_by_div">Powered by <a target="_blank" href="http://miniorange.com/2-factor-authentication"><div class="mo2f_powered_by_miniorange"></div></a></div>
 		<script>
+			jQuery("body.login div#login").before(jQuery('.miniorange_soft_auth'));
 			function mologinback(){
 				jQuery('#mo2f_backto_mo_loginform').submit();
 			 }
@@ -499,25 +504,29 @@ class Miniorange_Mobile_Login{
 	
 	public function mo_2_factor_show_qr_code(){
 		?>
-		<div id="mo_2_factor_qr_code_page" style="width:101%;margin-bottom:12%;">
-			<div style="margin-bottom:18%;"><center><h3>Identify yourself by scanning the QR code with miniOrange Authenticator.</h3></center></div>
-				
-			<div id="showQrCode" style="margin-bottom:18%;"><center> <?php echo '<img src="data:image/jpg;base64,' . $_SESSION[ 'mo2f-login-qrCode' ] . '" />'; ?></center>
-			</div>
+		<div class="miniorange_mobile_auth">
+			<div id="mo_2_factor_qr_code_page" class="miniorange-inner-login-container">
+				<div style="margin-bottom:10%;padding-top:6%;"><center><h3>Identify yourself by scanning the QR code with miniOrange Authenticator app.</h3></center></div>
 					
-			<p>
-				<?php if(!get_option('mo2f_enable_forgotphone')){ ?>
-				<div><input type="button" name="miniorange_login_forgotphone" onclick="mologinforgotphone();" id="miniorange_login_forgotphone" class="button button-primary button-large" value="Forgot Phone?" /></div>
-				<?php } ?>
+				<div id="showQrCode" style="margin-bottom:10%;"><center> <?php echo '<img src="data:image/jpg;base64,' . $_SESSION[ 'mo2f-login-qrCode' ] . '" />'; ?></center>
+				</div>
+						
 				
-				<div style="margin-right:53%;"><input type="button" name="miniorange_login_offline" onclick="mologinoffline();" id="miniorange_login_offline" class="button button-primary button-large" value="Phone is Offline?" /></div>
-				
-				<div><br /><br /><br /><input type="button" name="miniorange_login_back" onclick="mologinback();" id="miniorange_login_back" class="button button-primary button-large button-green" value="Back To Login" style="float:left;" /></div>
-			</p><br /><br />
+				<span style="padding-right:2%;"><center>
+					<?php if(!get_option('mo2f_enable_forgotphone')){ ?>
+					<input type="button" name="miniorange_login_forgotphone" onclick="mologinforgotphone();" id="miniorange_login_forgotphone" class="miniorange-button" value="Forgot Phone?" />
+					<?php } ?>
+					
+					<input type="button" name="miniorange_login_offline" onclick="mologinoffline();" id="miniorange_login_offline" class="miniorange-button" value="Phone is Offline?" /></center></span>
+					
+					<div><center><input type="button" name="miniorange_login_back" onclick="mologinback();" id="miniorange_login_back" class="button-green" value="←Back To Login" /></center></div>
+				<br />
+				<div class="mo2f_powered_by_div">Powered by <a target="_blank" href="http://miniorange.com/2-factor-authentication"><div class="mo2f_powered_by_miniorange"></div></a></div>
+			</div>
 		</div>
-		<div class="mo2f_powered_by_div">Powered by <a target="_blank" href="http://miniorange.com/2-factor-authentication"><div class="mo2f_powered_by_miniorange"></div></a></div>
 			 
-			 <script>
+		<script>
+			jQuery("body.login div#login").before(jQuery('.miniorange_mobile_auth'));
 			var timeout;
 			pollMobileValidation();
 			function pollMobileValidation()
