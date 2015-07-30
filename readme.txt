@@ -107,7 +107,9 @@ To know more about authentication methods, please visit http://miniorange.com/st
 2. Configure your mobile
 3. Username Login Screen (Enter username)
 4. Mobile AUthentication Login Screen ( Authenticate your mobile )
-5. OTP Login Screen (If your phone is offline then enter OTP from miniOrange app.)
+5. OTP Login Screen 
+   (If your phone is offline then enter OTP from miniOrange app.)
+   (If you forgot your phone then enter OTP sent to your registered email. )
 
 == Changelog ==
 
