@@ -143,11 +143,11 @@ miniOrange authentication service has 15+ authentication methods.One time passco
 == Screenshots ==
 
 1. Download app and configure mobile.
-2. Test abd reconfigure mobile.
+2. Test and reconfigure mobile.
 3. 2 Factor plugin settings.
 4. Login form option1 (Enter username)
 5. Login form option2 (Enter username)
-6. Mobile AUthentication Login Screen ( Authenticate your mobile )
+6. Mobile Authentication Login Screen ( Authenticate your mobile )
 7. OTP Login Screen (If your phone is offline then enter OTP from miniOrange app. If you forgot your phone then enter OTP sent to your registered email. )
 
 == Changelog ==
