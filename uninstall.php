@@ -14,6 +14,7 @@
 		delete_option('mo2f_disabled_status');
 		delete_option('mo2f_miniorange_admin');
 		delete_option('mo2f_enable_forgotphone');
+		delete_option('mo2f_show_loginwith_phone');
 		
 		//delete all stored key-value pairs for the roles
 		global $wp_roles;

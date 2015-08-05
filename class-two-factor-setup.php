@@ -27,6 +27,11 @@ class Two_Factor_Setup{
 	public $email;
 	
 	function check_mobile_status($tId){
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url = get_option('mo2f_host_name') . '/moas/api/auth/auth-status';
 		$ch = curl_init($url);
 		
@@ -64,11 +69,12 @@ class Two_Factor_Setup{
 											$timestampHeader, $authorizationHeader));
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec($ch);
 
 		if(curl_errno($ch)){
-			echo 'Request Error:' . curl_error($ch);
-		   exit();
+			return null;
 		}
 
 
@@ -77,6 +83,11 @@ class Two_Factor_Setup{
 	}
 	
 	function register_mobile($useremail){
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url = get_option('mo2f_host_name') . '/moas/api/auth/register-mobile';
 		$ch = curl_init($url);
 		global $current_user;
@@ -117,11 +128,12 @@ class Two_Factor_Setup{
 											$timestampHeader, $authorizationHeader));
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec($ch);
 
 		if(curl_errno($ch)){
-			echo 'Request Error:' . curl_error($ch);
-		   exit();
+			return null;
 		}
 
 
@@ -130,6 +142,11 @@ class Two_Factor_Setup{
 	}
 	
 	function mo_check_user_already_exist($email){
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url = get_option('mo2f_host_name') . '/moas/api/admin/users/search';
 		$ch = curl_init($url);
 		
@@ -167,11 +184,12 @@ class Two_Factor_Setup{
 											$timestampHeader, $authorizationHeader));
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec($ch);
 
 		if(curl_errno($ch)){
-			echo 'Request Error:' . curl_error($ch);
-		   exit();
+			return null;
 		}
 
 
@@ -180,6 +198,11 @@ class Two_Factor_Setup{
 	}
 	
 	function mo_create_user($currentuser,$email){
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url = get_option('mo2f_host_name') . '/moas/api/admin/users/create';
 		$ch = curl_init($url);
 		
@@ -220,11 +243,12 @@ class Two_Factor_Setup{
 											$timestampHeader, $authorizationHeader));
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec($ch);
 
 		if(curl_errno($ch)){
-			echo 'Request Error:' . curl_error($ch);
-		   exit();
+			return null;
 		}
 
 

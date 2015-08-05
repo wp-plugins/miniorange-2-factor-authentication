@@ -41,24 +41,40 @@ class Miniorange_User_Register{
 			<p style="color:red;">(Warning: <a href="http://php.net/manual/en/curl.installation.php" target="_blank">PHP CURL extension</a> is not installed or disabled)</p>
 		<?php
 		}
+		
+		$mo2f_active_tab = isset($_GET['mo2f_tab']) ? $_GET['mo2f_tab'] : '2factor_setup';
+		
 		?>
+		<div id="tab">
+			<h2 class="nav-tab-wrapper">
+				<a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=2factor_setup" class="nav-tab <?php echo $mo2f_active_tab == '2factor_setup' ? 'nav-tab-active' : ''; ?>" id="mo2f_tab1">Account Setup</a> 
+				<a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mobile_configure" class="nav-tab <?php echo $mo2f_active_tab == 'mobile_configure' ? 'nav-tab-active' : ''; ?>" id="mo2f_tab2">Configure Mobile</a>
+				<a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_demo" class="nav-tab <?php echo $mo2f_active_tab == 'mo2f_demo' ? 'nav-tab-active' : ''; ?>" id="mo2f_tab4">How It Works</a>
+				<a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help" class="nav-tab <?php echo $mo2f_active_tab == 'mo2f_help' ? 'nav-tab-active' : ''; ?>" id="mo2f_tab3">Help & Troubleshooting</a>
+			</h2>
+		</div>
+		
 		<div class="mo2f_container">
 			<table style="width:100%;">
 				<tr>
 					<td style="width:60%;vertical-align:top;">
 		<?php
 		
-		if(get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_INITIALIZE_MOBILE_REGISTRATION') {
-			if(isset($_SESSION[ 'mo2f_qrCode' ] )){
-				initialize_mobile_registration($current_user);
-			}else{
-				$this->mo2f_get_qr_code_for_mobile(get_user_meta($current_user->ID,'mo_2factor_map_id_with_email',true),$current_user->ID);
-				initialize_mobile_registration($current_user);
-			}	
-		}else if(get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_PLUGIN_SETTINGS'){
-			mo2f_show_instruction_to_allusers();
+		if($mo2f_active_tab == 'mobile_configure') {
+			instruction_for_mobile_registration($current_user);
+		}else if($mo2f_active_tab == 'mo2f_demo'){
+			show_2_factor_login_demo($current_user);
+		}else if($mo2f_active_tab == 'mo2f_help'){
+			mo2f_show_help_and_troubleshooting($current_user);
 		}else{
-			$this->show_user_welcome_page($current_user);
+		
+			if(get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_INITIALIZE_MOBILE_REGISTRATION') {
+				mo2f_show_instruction_to_allusers($current_user);
+			}else if(get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_PLUGIN_SETTINGS'){
+				mo2f_show_instruction_to_allusers($current_user);
+			}else{
+				$this->show_user_welcome_page($current_user);
+			}
 		}
 		?>
 					</td>
@@ -74,15 +90,15 @@ class Miniorange_User_Register{
 	?>
 		<form name="f" method="post" action="">
 			<div class="mo2f_table_layout">
-				<div id="toggle1" class="panel_toggle"><center><p style="font-size:17px;">miniOrange 2 Factor Authentication has been enabled for you. Please set up your account and register yourself by following the steps.</p></center></div>
+				<div><center><p style="font-size:17px;">miniOrange 2 Factor Authentication has been enabled for you. Please set up your account and register yourself by following the steps.</p></center></div>
 				<div id="panel1">
 					<table class="mo2f_settings_table">
 						
 						<tr>
-							<td><center><div class="alert-box"><input type="email" autofocus="true" name="mo_useremail" style="width: 70%;border: 2px solid #F7934D;text-align: center;height: 40px;font-size: 24px;border-radius:5px;" required placeholder="person@example.com" value="<?php echo $current_user->user_email;?>"/></div></center></td>
+							<td><center><div class="alert-box"><input type="email" autofocus="true" name="mo_useremail" style="width:48%;text-align: center;height: 40px;font-size:18px;border-radius:5px;" required placeholder="person@example.com" value="<?php echo $current_user->user_email;?>"/></div></center></td>
 						</tr>
 						<tr>
-							<td><center><p>Please enter a valid email id that you have access to. You will be able to login after verifying an OTP that we will send to this email in case you forgot or lost your phone.</p></center></td>
+							<td><center><p>Please enter a valid email id that you have access to. We need this email to send OTP in case you forgot or lost your phone.</p></center></td>
 						</tr>
 						<tr><td></td></tr>
 						<tr><td></td></tr>
@@ -124,25 +140,35 @@ class Miniorange_User_Register{
 				$enduser = new Two_Factor_Setup();
 				$check_user = json_decode($enduser->mo_check_user_already_exist($email),true);
 				if(json_last_error() == JSON_ERROR_NONE){
-					if(strcasecmp($check_user['status'], 'USER_FOUND') == 0){
-						update_user_meta($current_user->ID,'mo_2factor_user_registration_with_miniorange','SUCCESS');
-						update_user_meta($current_user->ID,'mo_2factor_map_id_with_email',$email);
-						$this->mo2f_get_qr_code_for_mobile($email,$current_user->ID);
-					}else if(strcasecmp($check_user['status'], 'USER_NOT_FOUND') == 0){
-						$content = json_decode($enduser->mo_create_user($current_user,$email), true);
-						if(json_last_error() == JSON_ERROR_NONE) {
-							if(strcasecmp($content['status'], 'SUCCESS') == 0) {
-								update_user_meta($current_user->ID,'mo_2factor_user_registration_with_miniorange','SUCCESS');
-								update_user_meta($current_user->ID,'mo_2factor_map_id_with_email',$email);
-								$this->mo2f_get_qr_code_for_mobile($email,$current_user->ID);
+					if($check_user['statusCode'] == 'ERROR'){
+						update_option( 'mo2f_message', $check_user['statusMessage']);
+					}else{
+						if(strcasecmp($check_user['status'], 'USER_FOUND') == 0){
+							update_user_meta($current_user->ID,'mo_2factor_user_registration_with_miniorange','SUCCESS');
+							update_user_meta($current_user->ID,'mo_2factor_map_id_with_email',$email);
+							update_user_meta($current_user->ID,'mo_2factor_user_registration_status','MO_2_FACTOR_INITIALIZE_MOBILE_REGISTRATION');
+							
+						}else if(strcasecmp($check_user['status'], 'USER_NOT_FOUND') == 0){
+							$content = json_decode($enduser->mo_create_user($current_user,$email), true);
+							if(json_last_error() == JSON_ERROR_NONE) {
+								if($content['statusCode'] == 'ERROR'){
+									update_option( 'mo2f_message', $content['statusMessage']);
+								}else{
+									if(strcasecmp($content['status'], 'SUCCESS') == 0) {
+										update_user_meta($current_user->ID,'mo_2factor_user_registration_with_miniorange','SUCCESS');
+										update_user_meta($current_user->ID,'mo_2factor_map_id_with_email',$email);
+										update_user_meta($current_user->ID,'mo_2factor_user_registration_status','MO_2_FACTOR_INITIALIZE_MOBILE_REGISTRATION');
+										
+									}else{
+										update_option( 'mo2f_message','Error occurred while adding the user. Please try again or contact your admin.');
+									}
+								}
 							}else{
 								update_option( 'mo2f_message','Error occurred while adding the user. Please try again or contact your admin.');
 							}
 						}else{
 							update_option( 'mo2f_message','Error occurred while adding the user. Please try again or contact your admin.');
 						}
-					}else{
-						update_option( 'mo2f_message','Error occurred while adding the user. Please try again or contact your admin.');
 					}
 				}else{
 					update_option( 'mo2f_message','Please try again.');
@@ -151,15 +177,51 @@ class Miniorange_User_Register{
 		}
 		
 		if(isset($_POST['option']) and $_POST['option'] == "mo_auth_mobile_registration_complete"){ //mobile registration
+			update_option( 'mo2f_message','Your phone is configured successfully.');
 			update_user_meta($current_user->ID,'mo_2factor_mobile_registration_status','MO_2_FACTOR_SUCCESS');
 			update_user_meta($current_user->ID,'mo_2factor_user_registration_status','MO_2_FACTOR_PLUGIN_SETTINGS');
+			unset($_SESSION['mo2f_qrCode']);
+			unset($_SESSION['mo2f_transactionId']);
+			unset($_SESSION['mo2f_show_qr_code']);
+			
 		}
+		
+		if(isset($_POST['option']) && $_POST['option'] == 'mo_2factor_test_mobile_authentication'){
+			if(get_user_meta($current_user->ID,'mo_2factor_mobile_registration_status',true) == 'MO_2_FACTOR_SUCCESS'){ /* Allow only if user's mobile is configured */
+				$challengeMobile = new Customer_Setup();
+				$content = $challengeMobile->send_otp_token(get_user_meta($current_user->ID,'mo_2factor_map_id_with_email',true), 'MOBILE AUTHENTICATION',get_option('mo2f_customerKey'),get_option('mo2f_api_key'));
+				$response = json_decode($content, true);
+				if(json_last_error() == JSON_ERROR_NONE) { /* Generate Qr code */
+					if($response['statusCode'] == 'ERROR'){
+						update_option( 'mo2f_message', $response['statusMessage']);
+						$this->mo_auth_show_error_message();
+					}else{
+						$_SESSION[ 'mo2f_qrCode' ] = $response['qrCode'];
+						$_SESSION[ 'mo2f_transactionId' ] = $response['txId'];
+						$_SESSION[ 'mo2f_show_qr_code'] = 'MO_2_FACTOR_SHOW_QR_CODE';
+						update_option( 'mo2f_message','Please scan the QR Code now.');
+						
+					}
+				}else{
+					update_option( 'mo2f_message','Invalid request. Please try again');
+					
+				}
+			}else{ /*if mobile is not configured then ask the user to configure phone */
+				$_SESSION['mo2f-login-message'] = 'Invalid request.Please configure your phone before testing.';
+				
+			}
+		}
+		
 		if(isset($_POST['option']) and $_POST['option'] == "mo_auth_setting_configuration"){ // redirect to setings page
 			update_user_meta($current_user->ID,'mo_2factor_user_registration_status','MO_2_FACTOR_PLUGIN_SETTINGS');
 		}
 		if(isset($_POST['option']) and $_POST['option'] == "mo_auth_refresh_mobile_qrcode"){ // refrsh Qrcode
-			$email = get_user_meta($current_user->ID,'mo_2factor_map_id_with_email',true);
-			$this->mo2f_get_qr_code_for_mobile($email,$current_user->ID);
+			if(get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_INITIALIZE_MOBILE_REGISTRATION' || get_user_meta($current_user->ID,'mo_2factor_user_registration_status',true) == 'MO_2_FACTOR_PLUGIN_SETTINGS') {
+				$email = get_user_meta($current_user->ID,'mo_2factor_map_id_with_email',true);
+				$this->mo2f_get_qr_code_for_mobile($email,$current_user->ID);
+			}else{
+				update_option( 'mo2f_message','Invalid request. Please register with miniOrange before configuring your mobile.');
+			}
 		}
 	}
 	
@@ -167,10 +229,18 @@ class Miniorange_User_Register{
 		$enduser = new Two_Factor_Setup();
 		$response = json_decode($enduser->register_mobile($email), true);
 		if(json_last_error() == JSON_ERROR_NONE) {
-			update_option( 'mo2f_message','Please scan the QR Code now.');
-			$_SESSION[ 'mo2f_qrCode' ] = $response['qrCode'];
-			$_SESSION[ 'mo2f_transactionId' ] = $response['txId'];
-			update_user_meta($id,'mo_2factor_user_registration_status','MO_2_FACTOR_INITIALIZE_MOBILE_REGISTRATION');
+			if($response['statusCode'] == 'ERROR'){
+				update_option( 'mo2f_message', $response['statusMessage']);
+				unset($_SESSION[ 'mo2f_qrCode' ]);
+				unset($_SESSION[ 'mo2f_transactionId' ]);
+				unset($_SESSION[ 'mo2f_show_qr_code']);
+				$this->mo_auth_show_error_message();
+			}else{
+				update_option( 'mo2f_message','Please scan the QR Code now.');
+				$_SESSION[ 'mo2f_qrCode' ] = $response['qrCode'];
+				$_SESSION[ 'mo2f_transactionId' ] = $response['txId'];
+				$_SESSION[ 'mo2f_show_qr_code'] = 'MO_2_FACTOR_SHOW_QR_CODE';
+			}
 		}
 	}
 }

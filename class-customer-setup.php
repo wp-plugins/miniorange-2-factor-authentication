@@ -30,6 +30,11 @@ class Customer_Setup{
 	public $transactionId;
 	
 	function check_customer() {
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url 	= get_option('mo2f_host_name') . "/moas/rest/customer/check-if-exists";
 		$ch 	= curl_init( $url );
 		$email 	= get_option("mo2f_email");
@@ -44,15 +49,15 @@ class Customer_Setup{
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
 		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );    # required for https urls
-
 		curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'charset: UTF - 8', 'Authorization: Basic' ) );
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec( $ch );
 		if( curl_errno( $ch ) ){
-			echo 'Request Error:' . curl_error( $ch );
-			exit();
+			return null;
 		}
 		curl_close( $ch );
 
@@ -61,6 +66,11 @@ class Customer_Setup{
 
 	
 	function create_customer(){
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url = get_option('mo2f_host_name') . '/moas/rest/customer/add';
 		$ch = curl_init($url);
 		global $current_user;
@@ -94,11 +104,12 @@ class Customer_Setup{
 			));
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec($ch);
 		
 		if(curl_errno($ch)){
-			echo 'Request Error:' . curl_error($ch);
-		   exit();
+			return null;
 		}
 		
 
@@ -107,6 +118,11 @@ class Customer_Setup{
 	}
 	
 	function get_customer_key() {
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url = get_option('mo2f_host_name') . "/moas/rest/customer/key";
 		$ch = curl_init($url);
 		$email = get_option("mo2f_email");
@@ -132,10 +148,11 @@ class Customer_Setup{
 			));
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec($ch);
 		if(curl_errno($ch)){
-			echo 'Request Error:' . curl_error($ch);
-		   exit();
+			return null;
 		}
 		curl_close($ch);
 
@@ -143,6 +160,11 @@ class Customer_Setup{
 	}
 	
 	function send_otp_token($uKey,$authType,$cKey,$apiKey){
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url = get_option('mo2f_host_name') . '/moas/api/auth/challenge';
 		$ch = curl_init($url);
 		
@@ -191,17 +213,23 @@ class Customer_Setup{
 											$timestampHeader, $authorizationHeader));
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec($ch);
 		
 		if(curl_errno($ch)){
-			echo 'Request Error:' . curl_error($ch);
-		   exit();
+		   return null;
 		}
 		curl_close($ch);
 		return $content;
 	}
 	
 	function validate_otp_token($authType,$username,$transactionId,$otpToken){
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url = get_option('mo2f_host_name') . '/moas/api/auth/validate';
 		$ch = curl_init($url);
 		
@@ -251,17 +279,23 @@ class Customer_Setup{
 											$timestampHeader, $authorizationHeader));
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec($ch);
 		
 		if(curl_errno($ch)){
-			echo 'Request Error:' . curl_error($ch);
-		   exit();
+			return null;
 		}
 		curl_close($ch);
 		return $content;
 	}
 	
 	function submit_contact_us( $q_email, $q_phone, $query ) {
+		if(!MO2f_Utility::is_curl_installed()) {
+			$message = 'Please enable curl extension. <a href="admin.php?page=miniOrange_2_factor_settings&amp;mo2f_tab=mo2f_help">Click here</a> for the steps to enable curl or check Help & Troubleshooting.';
+			return json_encode(array("statusCode"=>'ERROR',"statusMessage"=>$error . $message));
+		}
+		
 		$url = get_option('mo2f_host_name') . "/moas/rest/customer/contact-us";
 		$ch = curl_init($url);
 		global $current_user;
@@ -287,11 +321,12 @@ class Customer_Setup{
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'charset: UTF-8', 'Authorization: Basic' ) );
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $field_string);
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20);
 		$content = curl_exec( $ch );
 		
 		if(curl_errno($ch)){
-			echo 'Request Error:' . curl_error($ch);
-		   return false;
+			return null;
 		}
 		curl_close($ch);
 

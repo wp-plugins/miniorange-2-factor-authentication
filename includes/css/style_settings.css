@@ -1,22 +1,26 @@
 .mo2f_table_layout {
 	background-color:#FFFFFF; 
 	border:1px solid #CCCCCC; 
-	padding:0px 24px 10px 20px;
-	min-height:360px;
+	padding:0px 24px 0px 20px;
+	min-height:373px;
 }
 .mo2f_small_layout{
 	background-color:#FFFFFF; 
 	border:1px solid #CCCCCC; 
 	padding:0px 24px 10px 20px;
 }
-.mo2f_container{
-	padding:10px;
-}
+
 .mo2f_support_layout{
 	width: 93%;
 	background-color:#FFFFFF; 
 	border:1px solid #CCCCCC; 
 	padding-left:20px; 
+}
+.mo2f_help_layout{
+	background-color:#FFFFFF; 
+	border:1px solid #CCCCCC; 
+	padding-left:20px; 
+	min-height: 550px;
 }
 
 .mo2f_table_layout td strong {
@@ -49,6 +53,7 @@
 	border-radius: 4px;
 	padding: 5px;
 	color: #31708f;
+	font-style: italic;
 }
 .button-green{
 	background: #95D387 !important;
@@ -70,6 +75,34 @@
 	padding: 10px !important;
 	font-size: 2em !important;
 	height: 46px !important;
-	border-radius: 9px !important;
+	border-radius: 5px !important;
 	line-height:25px!important;
 }
+
+.mo2f_account_header{
+	margin: 0px !important;
+	
+}
+
+a{
+text-decoration:none !important;
+}
+.mo2f_help_container{
+background-color:#ccc;
+}
+
+.mo2f_faqs>h3, .mo2f_faqs>div{
+margin-left:15px !important;
+margin-right:5px !important;
+
+}
+.mo2f_faqs>div{
+padding: 5px 20px;
+border-left: 2px solid grey;
+}
+
+.mo2f_faqs>hr{
+	    border-top: 1px solid rgb(135, 129, 129);
+		margin-right:20px;
+}
+
