@@ -1,13 +1,13 @@
-=== 2 Factor authentication plugin for wordpress ===
+=== Two Factor Authentication (2 Factor Authentication) ===
 Contributors: miniOrange
-Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, multi factor authentication, Google authenticator, login, authy, Clef, 2 Factor, yubico, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, website security, android, iphone, one time passcode, soft token, miniorange, woocommerce
+Tags: 2 factor authentication, 2 step verification, 2FA, single sign on, multi factor authentication, Google authenticator, login, authy, Clef, 2 Factor, yubico, Two Factor, Authentication, Mobile Authentication, otp, tfa, strong authentication, 2 step authentication, mobile, smartphone authentication, Multifactor authentication, no password, passwordless login, login, security, website security, android, iphone, one time passcode, password, soft token, miniorange, woocommerce, auth, authenticate, two factor auth, two-factor
 Requires at least: 3.0.1
 Tested up to: 4.2.4
 Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-2 Factor authentication for secure login.
+Enable 2FA for your admins and users - Supports smart phones (QR code, Soft token, push), feature phones (otp over sms) , landlines (phone call), KBA.
 
 == Description ==
 
@@ -20,6 +20,8 @@ A highly secure two-factor authentication for all users of your site.
 * If your phone is lost or stolen or discharged, it offers an alternate login method
 * If your phone is offline, you can use a soft token to login
 * It offers inline registration of users so you can simply activate and configure the plugin and you are all set. 
+
+Feature phone and landline are supported. You need to contact info@miniorange.com to enable it. Trusted Device, Location, Timeof access and user behavior is also supported. You need to enable this by contacting info@miniorange.com
 
 miniOrange supports 15+ authentication methods. For a complete list of authentication methods please visit http://miniorange.com/strong_auth . If you want to have any other 2-factor for your WordPress site, <a href="http://miniorange.com/contact" target="_blank">Contact us</a>.
 
